@@ -1,7 +1,7 @@
 import { getLinks } from "./link-urls"
 
 export const siteConfig = {
-  name: "hardcharger/ui",
+  name: "fanblitz/ui",
   url: "https://ui.shadcn.com",
   ogImage: "https://ui.shadcn.com/og.jpg",
   description:
@@ -9,7 +9,7 @@ export const siteConfig = {
   links: {
     twitter: "https://twitter.com/shadcn",
     kurious: "https://kurious-design.com",
-    github: "https://github.com/kuriousDesign/hardcharger-app",
+    github: "https://github.com/kuriousDesign/fanblitz-app",
   },
   navItems: [
     {
