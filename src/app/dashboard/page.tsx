@@ -21,8 +21,10 @@ import { DefaultUser } from "@auth/core/types";
 
 //import DivShimmer from "@/components/div-shimmer";
 //import { shimmerBrightColor, shimmerDullColor, shimmerSensitivity } from "@/lib/shimmer-colors";
-import { getNFLOddsFromFanduel } from "@/actions/getSportsData";
-import FootballGameComponent from "@/components/FootballGameComponent";
+//import { getNFLOddsFromFanduel } from "@/actions/getSportsData";
+import { getNFLGamesForWeek } from "@/actions/getEspnApiData";
+//import FootballGameComponent from "@/components/FootballGameComponent";
+import { getNFLWeek1GamesWithOdds } from "@/actions/getEspnApiOdds";
 
 
 const title = "Dashboard";
@@ -49,7 +51,15 @@ export default async function DashboardPage() {
     }
     const isAdmin = await getIsAdmin();
 
-    const games = await getNFLOddsFromFanduel();
+    const games = await getNFLGamesForWeek(1);
+    if (games && games.length > 0) {
+        //console.log('NFL Games for Week 1:', games[0]);
+    }
+
+    const gamesWithOdds = await getNFLWeek1GamesWithOdds();
+    if (gamesWithOdds && gamesWithOdds.length > 0) {
+        console.log('NFL Games with Odds for Week 1:', gamesWithOdds[0]);
+    }
 
     //brightColor hsv: 38, 45, 100
 //dullColor hsv: 38, 100, 63
@@ -76,13 +86,13 @@ export default async function DashboardPage() {
                 <div className="theme-container container flex flex-1 flex-col gap-4">
                     <Suspense fallback={<TabCardSkeleton />}>
                         {/* <TabCardGames /> */}
-                        {games.length > 0 ? (
+                        {/* {games.length > 0 ? (
                             games.map((game, index) => (
                                 <FootballGameComponent key={index} game={game} />
                             ))
                         ) : (
                             <div>No NFL games found.</div>
-                        )}
+                        )} */}
                     </Suspense>
                 </div>
             </div>
