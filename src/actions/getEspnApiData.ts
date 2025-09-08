@@ -45,7 +45,7 @@ export async function getNFLGamesForWeek(
 ): Promise<Game[] | null> {
   // You might need to adjust the API endpoint based on the most up-to-date community findings.
   const url = `http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${year}&seasontype=${seasonType}&week=${week}`;
-  console.log('Fetching NFL games from URL:', url);
+  //console.log('Fetching NFL games from URL:', url);
 
   try {
     const response = await fetch(url);

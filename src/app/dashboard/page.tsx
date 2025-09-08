@@ -25,6 +25,7 @@ import { DefaultUser } from "@auth/core/types";
 import { getNFLGamesForWeek } from "@/actions/getEspnApiData";
 //import FootballGameComponent from "@/components/FootballGameComponent";
 import { getNFLWeek1GamesWithOdds } from "@/actions/getEspnApiOdds";
+import FootballGameComponent from "@/components/FootballGameComponent";
 
 
 const title = "Dashboard";
@@ -86,13 +87,13 @@ export default async function DashboardPage() {
                 <div className="theme-container container flex flex-1 flex-col gap-4">
                     <Suspense fallback={<TabCardSkeleton />}>
                         {/* <TabCardGames /> */}
-                        {/* {games.length > 0 ? (
-                            games.map((game, index) => (
+                        {gamesWithOdds && gamesWithOdds.length > 0 ? (
+                            gamesWithOdds.map((game, index) => (
                                 <FootballGameComponent key={index} game={game} />
                             ))
                         ) : (
                             <div>No NFL games found.</div>
-                        )} */}
+                        )}
                     </Suspense>
                 </div>
             </div>
