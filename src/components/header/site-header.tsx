@@ -50,7 +50,7 @@ export function SiteHeader() {
                 variant="link"
                 className={`flex h-8 items-center text-lg text-secondary-foreground font-bold leading-none ${fontOrbitron.className}`}
               >
-                hardCharger
+                FanBlitz
               </LinkButton>
               <TiltedBox width="4" />
               <div className="w-[8px] h-10 bg-transparent">{" "}  </div>

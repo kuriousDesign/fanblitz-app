@@ -14,13 +14,15 @@ import { getLinks } from "@/lib/link-urls";
 import { TabCardSkeleton } from "@/components/cards/tab-card";
 import { getIsAdmin } from "@/actions/userActions";
 
-import TabCardGames from "@/components/tab-cards/games";
+//import TabCardGames from "@/components/tab-cards/games";
 import { Suspense } from "react";
 import { postNewPlayerWithUser } from "@/actions/postActions";
 import { DefaultUser } from "@auth/core/types";
 
-import DivShimmer from "@/components/div-shimmer";
-import { shimmerBrightColor, shimmerDullColor, shimmerSensitivity } from "@/lib/shimmer-colors";
+//import DivShimmer from "@/components/div-shimmer";
+//import { shimmerBrightColor, shimmerDullColor, shimmerSensitivity } from "@/lib/shimmer-colors";
+import { getNFLOddsFromFanduel } from "@/actions/getSportsData";
+import FootballGameComponent from "@/components/FootballGameComponent";
 
 
 const title = "Dashboard";
@@ -47,6 +49,8 @@ export default async function DashboardPage() {
     }
     const isAdmin = await getIsAdmin();
 
+    const games = await getNFLOddsFromFanduel();
+
     //brightColor hsv: 38, 45, 100
 //dullColor hsv: 38, 100, 63
 
@@ -71,15 +75,15 @@ export default async function DashboardPage() {
             <div className="flex flex-1 flex-col pb-6">
                 <div className="theme-container container flex flex-1 flex-col gap-4">
                     <Suspense fallback={<TabCardSkeleton />}>
-                        <TabCardGames />
+                        {/* <TabCardGames /> */}
+                        {games.length > 0 ? (
+                            games.map((game, index) => (
+                                <FootballGameComponent key={index} game={game} />
+                            ))
+                        ) : (
+                            <div>No NFL games found.</div>
+                        )}
                     </Suspense>
-                    <DivShimmer className='text-2xl font-bold text-center' title="Welcome to the Dashboard!" options={{
-                        type: 'twoHsvColors',
-                        dullHsv: shimmerDullColor,
-                        brightHsv: shimmerBrightColor,
-                        sensitivity: shimmerSensitivity,
-                    }} />
-                  
                 </div>
             </div>
         </div>
