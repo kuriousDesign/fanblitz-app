@@ -824,6 +824,16 @@ function convertGameWithOddsToSimplifiedGame(
     if (!details) {
         console.log(game.odds?.items);
         //throw new Error("No details found in game odds");
+        const simpleGame: SimplifiedGame = {
+            id: game.id,
+            commence_time: game.date,
+            home_team: game.homeTeam,
+            away_team: game.awayTeam,
+            bookmaker: "ESPN Bet",
+            spread_favorite: "",
+            spread_points: 0,
+        };
+        return simpleGame;
     }
     const [team, points] = details.split(" ");
     const simpleGame: SimplifiedGame = {
