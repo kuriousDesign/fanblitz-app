@@ -19,13 +19,9 @@ import { Suspense } from "react";
 import { postNewPlayerWithUser } from "@/actions/postActions";
 import { DefaultUser } from "@auth/core/types";
 
-//import DivShimmer from "@/components/div-shimmer";
-//import { shimmerBrightColor, shimmerDullColor, shimmerSensitivity } from "@/lib/shimmer-colors";
-//import { getNFLOddsFromFanduel } from "@/actions/getSportsData";
-import { getNFLGamesForWeek } from "@/actions/getEspnApiData";
-//import FootballGameComponent from "@/components/FootballGameComponent";
-import { getNFLWeek1GamesWithOdds } from "@/actions/getEspnApiOdds";
-import FootballGameComponent from "@/components/FootballGameComponent";
+import ButtonUpdateAvailableWeekMatchups from "@/components/button-update-available-week-matchups";
+import { getMatchupsByWeek } from "@/actions/getMatchups";
+import FootballMatchupComponent from "@/components/FootballGameComponent";
 
 
 const title = "Dashboard";
@@ -52,19 +48,7 @@ export default async function DashboardPage() {
     }
     const isAdmin = await getIsAdmin();
 
-    const games = await getNFLGamesForWeek(1);
-    if (games && games.length > 0) {
-        //console.log('NFL Games for Week 1:', games[0]);
-    }
-
-    const gamesWithOdds = await getNFLWeek1GamesWithOdds();
-    if (gamesWithOdds && gamesWithOdds.length > 0) {
-        console.log('NFL Games with Odds for Week 1:', gamesWithOdds[0]);
-    }
-
-    //brightColor hsv: 38, 45, 100
-//dullColor hsv: 38, 100, 63
-
+    const matchups = await getMatchupsByWeek(3);
 
     return (
         <div>
@@ -80,6 +64,7 @@ export default async function DashboardPage() {
                             Events
                         </LinkButton>
                     }
+                     {isAdmin && <ButtonUpdateAvailableWeekMatchups week={3} />}
            
                 </PageActions>
             </PageHeader>
@@ -87,13 +72,17 @@ export default async function DashboardPage() {
                 <div className="theme-container container flex flex-1 flex-col gap-4">
                     <Suspense fallback={<TabCardSkeleton />}>
                         {/* <TabCardGames /> */}
-                        {gamesWithOdds && gamesWithOdds.length > 0 ? (
-                            gamesWithOdds.map((game, index) => (
-                                <FootballGameComponent key={index} game={game} />
-                            ))
+                        {matchups && matchups.length > 0 ? (
+                            <>
+                                <div className="text-2xl font-bold mb-4 text-center">NCAA Week 3 Matchups: {matchups.length}</div>
+                                {matchups.map((matchup, index) => (
+                                    <FootballMatchupComponent key={index} matchup={matchup} />
+                                ))}
+                            </>
                         ) : (
-                            <div>No NFL games found.</div>
+                            <div>No NCAA games found.</div>
                         )}
+                       
                     </Suspense>
                 </div>
             </div>

@@ -1,9 +1,9 @@
-import { getNFLOddsFromFanduel } from "@/actions/getSportsData";
-import FootballGameComponent from "@/components/FootballGameComponent";
+import { getOddsApiNcaaMatchupsWithSpreadByWeek } from "@/actions/getOddsApi";
+import FootballMatchupComponent from "@/components/FootballGameComponent";
 import { SimplifiedGame } from "@/types/football";
 
 export default async function SportsPage() {
-  const games = await getNFLOddsFromFanduel();
+  const games = await getOddsApiNcaaMatchupsWithSpreadByWeek();
   //console.log(convertGameToSimplified(games[0]));
   //const simplifiedGame = convertGameToSimplified(games[0]);
 
@@ -11,7 +11,7 @@ export default async function SportsPage() {
     <div>
       <h1>Nfl FanDuel Data</h1>
         {games.length > 0 ? games.map((game: SimplifiedGame) => (
-            <FootballGameComponent key={game.id} game={game} />
+            <FootballMatchupComponent key={game.id} game={game} />
         )) : (
             <div>No NFL games found.</div>
         )}

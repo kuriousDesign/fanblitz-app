@@ -1,4 +1,6 @@
 // Types
+import { MatchupClientType } from "@/models/Matchup";
+
 export interface Outcome {
     name: string;
     price: number;
@@ -18,13 +20,39 @@ export interface Bookmaker {
     markets: Market[];
 }
 
-export interface Game {
+export enum Sports {
+    NFL = "americanfootball_nfl",
+    NCAA_FOOTBALL = "americanfootball_ncaaf",
+}
+
+export interface GameWithBookmakerSpread {
     id: string;
-    commence_time: string;
+    commence_time: Date;
     home_team: string;
     away_team: string;
-    fanduel: Bookmaker;
+    bookmaker: Bookmaker;
+    week: number;
+    sport: string;
 }
+
+
+export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWithBookmakerSpread): Partial<MatchupClientType> {
+    const matchup: Partial<MatchupClientType> = {
+        source_api: "oddsApi",
+        sport: game.sport as string,
+        home_team: game.home_team,
+        away_team: game.away_team,
+        game_id: game.id,
+        game_date: game.commence_time,
+        week: game.week,
+        season: 2025,
+        bookmaker: game.bookmaker.title,
+        spread: game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].point || 0,
+        spread_favorite_team: game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].name || '',
+        // can_be_picked: 'yes',
+    };
+    return matchup;
+};
 
 export interface SimplifiedGame {
     id: string;
@@ -36,8 +64,8 @@ export interface SimplifiedGame {
     spread_points: number;
 }
 
-export function convertGameToSimplified(game: Game): SimplifiedGame {
-    const spreadMarket = game.fanduel.markets.find(m => m.key === "spreads");
+export function convertGameToSimplified(game: GameWithBookmakerSpread): SimplifiedGame {
+    const spreadMarket = game.bookmaker.markets.find(m => m.key === "spreads");
 
     if (!spreadMarket) {
         throw new Error("Spread market not found");
@@ -50,52 +78,14 @@ export function convertGameToSimplified(game: Game): SimplifiedGame {
         throw new Error("Favorite or underdog outcome not found");
     }
 
-    return {
+    const simplified: SimplifiedGame = {
         id: game.id,
-        commence_time: game.commence_time,
+        commence_time: game.commence_time.toDateString(),
         home_team: game.home_team,
         away_team: game.away_team,
-        bookmaker: game.fanduel.title,
+        bookmaker: game.bookmaker.title,
         spread_favorite: favoriteOutcome.name,
         spread_points: favoriteOutcome.point!
     };
+    return simplified;
 }
-
-// Object
-export const exampleGame: Game = {
-    id: "dee0a41ed5e8201a96d457899adbe918",
-    commence_time: "2025-09-08T00:22:53Z",
-    home_team: "Buffalo Bills",
-    away_team: "Baltimore Ravens",
-    fanduel: {
-        key: "fanduel",
-        title: "FanDuel",
-        last_update: "2025-09-08T00:26:07Z",
-        markets: [
-            {
-                key: "h2h",
-                last_update: "2025-09-08T00:26:07Z",
-                outcomes: [
-                    { name: "Baltimore Ravens", price: -125 },
-                    { name: "Buffalo Bills", price: -102 }
-                ]
-            },
-            {
-                key: "spreads",
-                last_update: "2025-09-08T00:26:07Z",
-                outcomes: [
-                    { name: "Baltimore Ravens", price: -110, point: -1.5 },
-                    { name: "Buffalo Bills", price: -120, point: 1.5 }
-                ]
-            },
-            {
-                key: "totals",
-                last_update: "2025-09-08T00:26:07Z",
-                outcomes: [
-                    { name: "Over", price: -118, point: 51.5 },
-                    { name: "Under", price: -112, point: 51.5 }
-                ]
-            }
-        ]
-    }
-};

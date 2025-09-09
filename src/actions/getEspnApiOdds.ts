@@ -92,7 +92,66 @@ export async function getNFLWeek1GamesWithOdds(): Promise<Array<SimplifiedGame> 
   }
 }
 
-// export const exampleGameWithOdds: unknown = {
+
+
+export async function getNCAAWeek1GamesWithOdds(): Promise<Array<SimplifiedGame> | null> {
+  try {
+    // Step 1: Fetch Week 3 schedule
+    const scheduleUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?seasontype=2&week=3&dates=2025';
+    const scheduleResponse = await fetch(scheduleUrl, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NCAA-App/1.0)' }, // Mimic browser to avoid blocks
+    });
+    
+    if (!scheduleResponse.ok) {
+      throw new Error(`Failed to fetch schedule: ${scheduleResponse.status}`);
+    }
+    
+    const scheduleData = await scheduleResponse.json() as { events: NFLEvent[] };
+    const games = scheduleData.events
+      .filter(event => event.competitions.length > 0) // Ensure valid games
+      .map(event => {
+        const comp = event.competitions[0];
+        const awayTeam = comp.competitors[0].team.abbreviation;
+        const homeTeam = comp.competitors[1].team.abbreviation;
+        return {
+          id: event.id,
+          awayTeam,
+          homeTeam,
+          date: event.date,
+          odds: null as Odds | null, // Placeholder
+        };
+      });
+
+    // Step 2: Enrich each game with odds (parallel fetches for efficiency)
+    const gamesWithOdds = await Promise.all(
+      games.map(async (game) => {
+        try {
+          const oddsUrl = `https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/events/${game.id}/competitions/${game.id}/odds`;
+          console.log(oddsUrl);
+          const oddsResponse = await fetch(oddsUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NCAA-App/1.0)' },
+          });
+          
+          if (oddsResponse.ok) {
+            const oddsData = await oddsResponse.json() as Odds;
+            return { ...game, odds: oddsData };
+          }
+        } catch (error) {
+          console.error(`Failed to fetch odds for game ${game.id}:`, error);
+        }
+        return game; // Return without odds if fetch fails
+      })
+    );
+
+    console.log(gamesWithOdds[0]);
+    return gamesWithOdds.map(game => (convertGameWithOddsToSimplifiedGame(game)));
+  } catch (error) {
+    console.error('Error fetching NCAA Week 1 data:', error);
+    return null;
+  }
+}
+
+// export const exampleNflGameWithOdds: unknown = {
     
 //     "id": "401772918",
 //     "awayTeam": "BUF",
@@ -759,10 +818,12 @@ export async function getNFLWeek1GamesWithOdds(): Promise<Array<SimplifiedGame> 
 function convertGameWithOddsToSimplifiedGame(
   game: GameWithOdds
 ): SimplifiedGame {
-    const details = game.odds?.items[0].details;
+    //console.log(game.odds?.items);
+    const details = game.odds?.items[0].details ?? null;
     // SEPARATE details into team and points
     if (!details) {
-        throw new Error("No details found in game odds");
+        console.log(game.odds?.items);
+        //throw new Error("No details found in game odds");
     }
     const [team, points] = details.split(" ");
     const simpleGame: SimplifiedGame = {

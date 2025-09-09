@@ -1,19 +1,19 @@
-import { SimplifiedGame } from "@/types/football";
+import { MatchupClientType } from "@/models/Matchup";
 
 interface FootballGameComponentProps {
-    game: SimplifiedGame;
+    matchup: MatchupClientType;
 }
 
-const FootballGameComponent: React.FC<FootballGameComponentProps> = ({ game }) => {
+const FootballMatchupComponent: React.FC<FootballGameComponentProps> = ({ matchup }) => {
     return (
         <div className="p-4 border rounded-lg shadow-md bg-secondary">
-            <h2 className="text-xl text-secondary-foreground font-bold mb-2">{game.away_team} @ {game.home_team}</h2>
-            <p className="mb-1"><strong>Commence Time:</strong> {new Date(game.commence_time).toLocaleString()}</p>
-            <p className="mb-1"><strong>Bookmaker:</strong> {game.bookmaker}</p>
-            <p className="mb-1"><strong>Spread Favorite:</strong> {game.spread_favorite}</p>
-            <p className="mb-1"><strong>Spread Points:</strong> {game.spread_points}</p>
+            <h2 className="text-xl text-secondary-foreground font-bold mb-2">{matchup.away_team} @ {matchup.home_team}</h2>
+            {/* <p className="mb-1"><strong>Commence Time:</strong> {matchup.game_date}</p> */}
+            <p className="mb-1"><strong>Bookmaker:</strong> {matchup.bookmaker}</p>
+            <p className="mb-1"><strong>Spread Favorite:</strong> {matchup.spread_favorite_team}</p>
+            <p className="mb-1"><strong>Spread Points:</strong> {matchup.spread}</p>
         </div>
     );
 };
 
-export default FootballGameComponent;
+export default FootballMatchupComponent;
