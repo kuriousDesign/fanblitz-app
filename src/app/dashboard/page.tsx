@@ -21,7 +21,7 @@ import { DefaultUser } from "@auth/core/types";
 
 import ButtonUpdateAvailableWeekMatchups from "@/components/button-update-available-week-matchups";
 import { getMatchupsByWeek } from "@/actions/getMatchups";
-import FootballMatchupComponent from "@/components/FootballGameComponent";
+import FootballMatchupComponent from "@/components/FootballMatchupComponent";
 
 
 const title = "Dashboard";

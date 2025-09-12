@@ -14,6 +14,8 @@ export const postMatchup = async (matchup: Partial<MatchupDoc | MatchupClientTyp
 //     race.event_id = new Types.ObjectId(race.event_id as string);
 //   }
 
+//console.log("spread date", matchup.spread_date, typeof matchup.spread_date);
+
   const matchupData = {
     source_api: matchup.source_api!,
     sport: matchup.sport!,
@@ -25,17 +27,28 @@ export const postMatchup = async (matchup: Partial<MatchupDoc | MatchupClientTyp
     season: matchup.season!,
     bookmaker: matchup.bookmaker!,
     spread: matchup.spread!,
+    spread_date: matchup.spread_date!,
     spread_favorite_team: matchup.spread_favorite_team!,
     can_be_picked: matchup.can_be_picked || 'yes',
   };
 
+  // log the type of matchupData.game_date
+  //console.log('spreadddd date type:', matchupData.spread_date);
+
   try {
 
-    if (matchup._id) {
+    // if the entry already includes the game_id, update it
+    const existingMatchup = await MatchupModel.findOne({ game_id: matchup.game_id });
+    if (matchup.game_id && existingMatchup) {
+        await MatchupModel.findByIdAndUpdate(existingMatchup._id, matchupData, { new: true });
+        return { message: 'Matchup updated successfully' };
+    } else if (matchup._id) {
       await MatchupModel.findByIdAndUpdate(matchup._id, matchupData, { new: true });
       return { message: 'Matchup updated successfully' };
     } else {
       const newMatchup = new MatchupModel(matchupData);
+      //console.log('New matchup to be saved, spread_date:', newMatchup.spread_date);
+      //console.log('New matchup to be saved, game_date:', newMatchup.game_date);
       await newMatchup.save();
       return { message: 'Matchup created successfully' };
     }

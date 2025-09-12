@@ -27,7 +27,7 @@ export enum Sports {
 
 export interface GameWithBookmakerSpread {
     id: string;
-    commence_time: Date;
+    commence_time: string;
     home_team: string;
     away_team: string;
     bookmaker: Bookmaker;
@@ -37,6 +37,13 @@ export interface GameWithBookmakerSpread {
 
 
 export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWithBookmakerSpread): Partial<MatchupClientType> {
+    
+    const spreadMarket = game.bookmaker.markets.find(m => m.key === "spreads");
+    //console.log(spreadMarket?.last_update);
+    if (!spreadMarket) {
+        throw new Error("Spread market not found");
+    }
+
     const matchup: Partial<MatchupClientType> = {
         source_api: "oddsApi",
         sport: game.sport as string,
@@ -48,6 +55,7 @@ export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWith
         season: 2025,
         bookmaker: game.bookmaker.title,
         spread: game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].point || 0,
+        spread_date: game.bookmaker.last_update,
         spread_favorite_team: game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].name || '',
         // can_be_picked: 'yes',
     };
@@ -80,7 +88,7 @@ export function convertGameToSimplified(game: GameWithBookmakerSpread): Simplifi
 
     const simplified: SimplifiedGame = {
         id: game.id,
-        commence_time: game.commence_time.toDateString(),
+        commence_time: game.commence_time,
         home_team: game.home_team,
         away_team: game.away_team,
         bookmaker: game.bookmaker.title,

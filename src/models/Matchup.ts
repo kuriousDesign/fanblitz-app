@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 import { createModel } from '@/lib/createModel';
 
+// i want to force the dates to be stored as ISO strings in the db
+// this is because the dates coming from the odds api are strings
+// and i want to avoid timezone issues with Date objects
+
 const matchupSchema = new mongoose.Schema(
   {
     source_api: { type: String, required: true },
@@ -8,11 +12,12 @@ const matchupSchema = new mongoose.Schema(
     sport: { type: String, required: true },
     home_team: { type: String, required: true },
     away_team: { type: String, required: true },
-    game_date: { type: Date, required: true },
+    game_date: { type: String, required: true },
     week: { type: Number, required: true },
     season: { type: Number, required: true },
     bookmaker: { type: String, required: true },
     spread: { type: Number, required: true },
+    spread_date: { type: String, required: true},
     spread_favorite_team: {type: String, required: true },
     can_be_picked: {type: String, required: true },
   },

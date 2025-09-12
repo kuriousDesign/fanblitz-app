@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import axios from "axios";
-import { GameWithBookmakerSpread, Sports, convertGameToSimplified, convertGameWithBookmakerSpreadToMatchupClientType } from "@/types/football";
+import { GameWithBookmakerSpread, Sports, convertGameWithBookmakerSpreadToMatchupClientType } from "@/types/football";
 import { getMatchupsByWeek } from "./getMatchups";
-import { postMatchups } from "./postAvailableMatchups";
+import { postMatchups } from "./postMatchup";
 import { MatchupClientType } from "@/models/Matchup";
 
 const API_KEY = process.env.ODDS_API_KEY; // Store your API key in .env.local
@@ -70,7 +70,7 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
     );
 
     // give me the full query string on console
-    console.log("Odds API request URL:", oddsRes.request.res.responseUrl);
+    //console.log("Odds API request URL:", oddsRes.request.res.responseUrl);
 
     const filtered: GameWithBookmakerSpread[] = oddsRes.data.map((game: any) => {
       let bookmaker = null;
@@ -85,7 +85,7 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
       }
       const gameWithBookmakerSpread: GameWithBookmakerSpread = {
         id: game.id,
-        commence_time: new Date(game.commence_time),
+        commence_time: game.commence_time,
         home_team: game.home_team,
         away_team: game.away_team,
         bookmaker,
@@ -94,22 +94,22 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
       };
       return gameWithBookmakerSpread;
     });
-    console.log("first filtered game");
-    console.log(filtered[0]);
-    console.log('first filtered game bookmaker markets spread outcomes:');
-    console.log(filtered[0]?.bookmaker.markets.find(m => m.key === "spreads")?.outcomes);
+    // console.log("first filtered game");
+    // console.log(filtered[0]);
+    // console.log('first filtered game bookmaker markets spread outcomes:');
+    // console.log(filtered[0]?.bookmaker.markets.find(m => m.key === "spreads")?.outcomes);
     // filter out nulls
     const nonNullFiltered = filtered.filter((game): game is GameWithBookmakerSpread => game !== null);
-    console.log("total non-null games found: ", nonNullFiltered.length);
-    console.log("total games found: ", filtered.length);
+    //console.log("total non-null games found: ", nonNullFiltered.length);
+    //console.log("total games found: ", filtered.length);
 
     // convert filtered to simplified games
-    const simplified = nonNullFiltered.map((game: any) => {
-      return convertGameToSimplified(game as GameWithBookmakerSpread);
-    });
+    // const simplified = nonNullFiltered.map((game: any) => {
+    //   return convertGameToSimplified(game as GameWithBookmakerSpread);
+    // });
 
-    console.log("first simplified game");
-    console.log(simplified[0]);
+    //console.log("first simplified game");
+    //console.log(simplified[0]);
 
     return nonNullFiltered;
   } catch (error: unknown) {
@@ -121,11 +121,11 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
 export async function updateNcaaMatchupsByWeek(week: number): Promise<Partial<MatchupClientType>[]> {
   const games = await getOddsApiNcaaMatchupsWithSpreadByWeek(week);
   const matchups = games.map(game => convertGameWithBookmakerSpreadToMatchupClientType(game));
-  console.log(`Posting ${matchups.length} NCAA games with spreads for week ${week}`);
+  //console.log(`Posting ${matchups.length} NCAA games with spreads for week ${week}`);
   await postMatchups(matchups);
   const fetchedMatchups = await getMatchupsByWeek(week);
-  console.log(`Fetched ${fetchedMatchups.length} NCAA games with spreads for week ${week}`);
-  console.log('First converted matchup:');
-  console.log(matchups[0]);
-  return matchups;
+  //console.log(`Fetched ${fetchedMatchups.length} NCAA games with spreads for week ${week}`);
+  //console.log('First converted matchup:');
+  //console.log(matchups[0]);
+  return fetchedMatchups;
 }
