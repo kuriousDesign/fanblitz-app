@@ -23,6 +23,10 @@ export function getLinks() {
         return '/events';
     };
 
+    const getMakePicksUrl = () => {
+        return '/makepicks';
+    }
+
     const getEventUrl = (eventId?: string) => {
         return `${getEventsUrl()}/${eventId || '_'}`;
     };
@@ -117,6 +121,7 @@ export function getLinks() {
     }
 
     return {
+        getMakePicksUrl,
         getAdminUrl,
         getCreateEventUrl,
         getCreateRaceUrl,

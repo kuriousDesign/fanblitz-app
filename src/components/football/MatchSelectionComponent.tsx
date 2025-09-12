@@ -1,31 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, PanInfo } from "framer-motion";
 import { X } from "lucide-react";
 
+import { postPick } from "@/actions/postPick";
+import { MatchupClientType } from "@/models/Matchup";
+
 interface FootballPickerProps {
-  homeTeam: string;
-  awayTeam: string;
+  matchup:MatchupClientType;
 }
 
-export default function FootballPicker({ homeTeam, awayTeam }: FootballPickerProps) {
+export default function FootballPicker({
+  matchup,
+
+}: FootballPickerProps) {
+  const { home_team: homeTeam, away_team: awayTeam } = matchup;
   const [selected, setSelected] = useState<"home" | "away" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setIsDragging(false);
 
-    if (info.offset.x > 100) {
-      setSelected("home");
-    } else if (info.offset.x < -100) {
-      setSelected("away");
-    } else {
-      setSelected(null);
-    }
+    let newSelection: "home" | "away" | null = null;
+    if (info.offset.x > 100) newSelection = "home";
+    else if (info.offset.x < -100) newSelection = "away";
+
+    setSelected(newSelection);
   };
 
-  const resetPick = () => setSelected(null);
+  // might need to useEffect with ties to selected to call the onPickChange function
+  useEffect(() => {
+
+    // define an async function here to call 
+    const notifyPickChange = async () => {
+      const pick = selected ? selected as string : null;
+      if (!pick) return;
+      console.log("notifying pick change:", pick);
+      await postPick(pick);
+    };
+    notifyPickChange();
+  }, [selected]);
+
+  const resetPick = () => {
+    setSelected(null);
+  };
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -50,7 +69,7 @@ export default function FootballPicker({ homeTeam, awayTeam }: FootballPickerPro
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
           />
 
-          {/* Cancel button in the center (only shows if settled on a team) */}
+          {/* Cancel button */}
           {selected && !isDragging && (
             <button
               onClick={resetPick}
@@ -61,7 +80,7 @@ export default function FootballPicker({ homeTeam, awayTeam }: FootballPickerPro
           )}
 
           {/* Football draggable */}
-            <motion.div
+          <motion.div
             className={`w-16 h-16 rounded-full flex items-center justify-center cursor-grab relative z-10 ${
               selected ? "bg-green-500/20 animate-pulse" : "bg-brown-600 shadow-lg"
             }`}
@@ -73,15 +92,15 @@ export default function FootballPicker({ homeTeam, awayTeam }: FootballPickerPro
             animate={{
               x: selected === "home" ? 140 : selected === "away" ? -140 : 0,
             }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          >
             <span className="text-2xl">🏈</span>
-            </motion.div>
+          </motion.div>
         </div>
 
         {/* Home Team */}
         <div
-          className={`flex-1 text-center text-md font-semibold h-20 text-wrap ${
+          className={`flex-1 text-center text-md font-semibold h-20 ${
             selected === "home" ? "text-pink-500 bg-black" : "text-gray-800 bg-black/0"
           }`}
         >

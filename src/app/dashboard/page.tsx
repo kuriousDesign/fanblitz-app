@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description,
 }
 export default async function DashboardPage() {
-    
+
     const user = await getUser();
     if (!user || !user.id) {
         console.log('No user found, redirecting to sign in', user);
@@ -64,8 +64,13 @@ export default async function DashboardPage() {
                             Events
                         </LinkButton>
                     }
-                     {isAdmin && <ButtonUpdateAvailableWeekMatchups week={3} />}
-           
+                    {isAdmin && <ButtonUpdateAvailableWeekMatchups week={3} />}
+
+                    <LinkButton
+                        href={getLinks().getMakePicksUrl()}>
+                        Make Picks
+                    </LinkButton>
+
                 </PageActions>
             </PageHeader>
             <div className="flex flex-1 flex-col pb-6">
@@ -82,7 +87,7 @@ export default async function DashboardPage() {
                         ) : (
                             <div>No NCAA games found.</div>
                         )}
-                       
+
                     </Suspense>
                 </div>
             </div>
