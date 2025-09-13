@@ -1,8 +1,8 @@
 import { handlePickFormSubmit } from '@/actions/postActions';
 import { Button } from '@/components/ui';
-import { PickClientType } from '@/models/Pick';
+import { PickClientType } from '@/models/reference/Pick';
 import { toast } from 'sonner';
-import { GameClientType } from '@/models/Game';
+import { GameClientType } from '@/models/reference/Game';
 //import { RacerDriverClientType } from '@/models/Racer';
 
 

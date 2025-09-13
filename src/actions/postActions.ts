@@ -1,21 +1,21 @@
 'use server'
 
 import connectToDb from '@/lib/db';
-import { DriverModel, DriverClientType, DriverDoc } from '@/models/Driver'
-import { EventModel, EventClientType } from '@/models/Event';
-import { GameModel, GameClientType, GameDoc } from '@/models/Game';
-import { PaymentClientType } from '@/models/Payment';
+import { DriverModel, DriverClientType, DriverDoc } from '@/models/reference/Driver'
+import { EventModel, EventClientType } from '@/models/reference/Event';
+import { GameModel, GameClientType, GameDoc } from '@/models/reference/Game';
+import { PaymentClientType } from '@/models/reference/Payment';
 import { PlayerModel, PlayerDoc, PlayerClientType } from '@/models/Player';
-import { RaceModel, RaceDoc, RaceClientType } from '@/models/Race';
-import { RacerModel, RacerClientType, RacerDoc } from '@/models/Racer';
+import { RaceModel, RaceDoc, RaceClientType } from '@/models/reference/Race';
+import { RacerModel, RacerClientType, RacerDoc } from '@/models/reference/Racer';
 
 import { Types } from 'mongoose';
 import { createDeleteHandler, createClientSafePostHandler } from '@/utils/actionHelpers';
-import { PickClientType, PickDoc, PickModel } from '@/models/Pick';
+import { PickClientType, PickDoc, PickModel } from '@/models/reference/Pick';
 import parseDriverData from '@/data/parseDriverData';
 
 import { drivers as driversData } from '@/data/drivers';
-import { HardChargerTableClientType, HardChargerTableDoc, HardChargerTableModel } from '@/models/HardChargerTable';
+import { HardChargerTableClientType, HardChargerTableDoc, HardChargerTableModel } from '@/models/reference/HardChargerTable';
 import { redirect } from 'next/navigation';
 import { getLinks } from '@/lib/link-urls';
 
@@ -68,7 +68,7 @@ export const postPayment = async (payment: Partial<PaymentClientType> & { _id?: 
   };
   console.log('Posting payment:', paymentData);
   try {
-    const { PaymentModel } = await import('@/models/Payment');
+    const { PaymentModel } = await import('@/models/reference/Payment');
     if (payment._id) {
       // dynamic import to avoid circular dependency
       

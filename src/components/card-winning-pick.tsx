@@ -7,7 +7,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { DriverClientType } from "@/models/Driver";
+import { DriverClientType } from "@/models/reference/Driver";
 import { numberToOrdinal } from "@/utils/helpers";
 
 

@@ -1,5 +1,5 @@
 import { getEvents } from "@/actions/getActions";
-import { EventClientType } from "@/models/Event";
+import { EventClientType } from "@/models/reference/Event";
 import Link from "next/link";
 
 

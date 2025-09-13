@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { DriverClientType } from '@/models/Driver';
+import { DriverClientType } from '@/models/reference/Driver';
 import { postDriver } from '@/actions/postActions';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';

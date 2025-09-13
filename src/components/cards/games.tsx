@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import { GameClientType } from "@/models/Game"
+import { GameClientType } from "@/models/reference/Game"
 import { getLinks } from "@/lib/link-urls";
 import GameDiv from "./game-div";
 

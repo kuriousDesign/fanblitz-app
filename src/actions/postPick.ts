@@ -1,10 +1,7 @@
 'use server'
 
-//import connectToDb from '@/lib/db';
-//import { MatchupModel, MatchupClientType, MatchupDoc } from '@/models/Matchup'
-//import { createClientSafePostHandler } from '@/utils/actionHelpers';
-export const postPick = async (pick: string) => {
-  console.log("in postPick selection:", pick);
-  // do something with the pick, e.g., save to database
-  return { message: 'Pick processed successfully' };
-}
+import { SpreadPickClientType, SpreadPickModel } from "@/models/SpreadPick";
+import { createClientSafePostHandler } from "@/utils/actionHelpers";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const postSpreadPick = createClientSafePostHandler<SpreadPickClientType>(SpreadPickModel as any);

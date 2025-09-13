@@ -9,8 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { GameClientType } from '@/models/Game';
-import { RaceClientType } from '@/models/Race';
+import { GameClientType } from '@/models/reference/Game';
+import { RaceClientType } from '@/models/reference/Race';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';

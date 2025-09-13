@@ -5,7 +5,7 @@ export const siteConfig = {
   url: "https://ui.shadcn.com",
   ogImage: "https://ui.shadcn.com/og.jpg",
   description:
-    "a pick 'em game that makes watching spring car racing even more thrilling.",
+    "a college football pick 'em game giving you the chance to win big money if you predict all outcomes correctly.",
   links: {
     twitter: "https://twitter.com/shadcn",
     kurious: "https://kurious-design.com",
@@ -13,12 +13,8 @@ export const siteConfig = {
   },
   navItems: [
     {
-      href: getLinks().getGamesUrl(),
-      label: "Games",
-    },
-    {
-      href: getLinks().getPlayerPicksUrl(),
-      label: "Picks",
+      href: getLinks().getMakePicksUrl(),
+      label: "Make Picks",
     },
     {
       href: "https://kurious-design.com",
@@ -27,11 +23,21 @@ export const siteConfig = {
 
   ],
   adminNavItems: [
-  { href: getLinks().getEventsUrl(), label: 'Events' },
-   { href: getLinks().getCreateEventUrl(), label: 'Create Event' },
-  //{ href: getLinks().getUsersUrl(), label: 'Users' },
-  { href: getLinks().getDriversUrl(), label: 'Drivers' },
-]
+    { 
+      href: getLinks().getSeasonsUrl(), 
+      label: 'Seasons' 
+    },
+    { 
+      href: getLinks().getCreateEventUrl(), 
+      label: 'Create Event' 
+    },
+    {
+      href: getLinks().getGameWeeksUrl(),
+      label: "Weeks",
+    },
+    { href: getLinks().getPlayersUrl(), label: 'Players' },
+    //{ href: getLinks().getDriversUrl(), label: 'Drivers' },
+  ]
 }
 
 export const META_THEME_COLORS = {

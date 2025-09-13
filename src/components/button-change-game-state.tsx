@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui';
 import { postGame } from '@/actions/postActions';
-import { GameClientType } from '@/models/Game';
+import { GameClientType } from '@/models/reference/Game';
 import { GameStates } from '@/types/enums';
 import { calculateHardChargersLeaderboardByGameId } from '@/actions/scoreActions';
 

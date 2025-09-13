@@ -35,8 +35,12 @@ export interface GameWithBookmakerSpread {
     sport: string;
 }
 
+export enum GameWeekTypes {
+    SPREAD = 'spread',
+    OVER_UNDER = 'over_under',
+}
 
-export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWithBookmakerSpread): Partial<MatchupClientType> {
+export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWithBookmakerSpread, gameWeekId:string): Partial<MatchupClientType> {
     
     const spreadMarket = game.bookmaker.markets.find(m => m.key === "spreads");
     //console.log(spreadMarket?.last_update);
@@ -45,14 +49,13 @@ export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWith
     }
 
     const matchup: Partial<MatchupClientType> = {
-        source_api: "oddsApi",
+        api_source: "oddsApi",
+        api_game_id: game.id,
         sport: game.sport as string,
         home_team: game.home_team,
         away_team: game.away_team,
-        game_id: game.id,
         game_date: game.commence_time,
-        week: game.week,
-        season: 2025,
+        game_week_id: gameWeekId,
         bookmaker: game.bookmaker.title,
         spread: game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].point || 0,
         spread_date: game.bookmaker.last_update,

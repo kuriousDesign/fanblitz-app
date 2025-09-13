@@ -1,5 +1,5 @@
 // basic data like your name and pick nickname
-import { PickClientType } from '@/models/Pick';
+import { PickClientType } from '@/models/reference/Pick';
 import { getRandomNicknameSuggestion } from './nicknameSuggestions';
 import { BiRefresh } from 'react-icons/bi';
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from '@/components/ui/card';

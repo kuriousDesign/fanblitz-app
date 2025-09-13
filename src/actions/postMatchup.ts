@@ -2,29 +2,26 @@
 
 import connectToDb from '@/lib/db';
 import { MatchupModel, MatchupClientType, MatchupDoc } from '@/models/Matchup'
-//import { createClientSafePostHandler } from '@/utils/actionHelpers';
+import { Types } from 'mongoose';
 
-//export const postMatchup = createClientSafePostHandler<MatchupClientType>(MatchupModel as any);
+
 
 export const postMatchup = async (matchup: Partial<MatchupDoc | MatchupClientType> & { _id?: string }) => {
   await connectToDb();
 
-  // check if event_id is a valid ObjectId, if its a string then convert it
-//   if (typeof (matchup.event_id) === 'string') {
-//     race.event_id = new Types.ObjectId(race.event_id as string);
-//   }
+  if (typeof matchup.game_week_id === 'string') {
+    matchup.game_week_id = new Types.ObjectId(matchup.game_week_id as string);
+  }
 
-//console.log("spread date", matchup.spread_date, typeof matchup.spread_date);
-
-  const matchupData = {
-    source_api: matchup.source_api!,
+  const matchupData: MatchupDoc = {
+    api_source: matchup.api_source!,
+    api_game_id: matchup.api_game_id!,
     sport: matchup.sport!,
+    game_week_id: matchup.game_week_id!,
     home_team: matchup.home_team!,
     away_team: matchup.away_team!,
-    game_id: matchup.game_id!,
+
     game_date: matchup.game_date!,
-    week: matchup.week!,
-    season: matchup.season!,
     bookmaker: matchup.bookmaker!,
     spread: matchup.spread!,
     spread_date: matchup.spread_date!,
@@ -32,16 +29,13 @@ export const postMatchup = async (matchup: Partial<MatchupDoc | MatchupClientTyp
     can_be_picked: matchup.can_be_picked || 'yes',
   };
 
-  // log the type of matchupData.game_date
-  //console.log('spreadddd date type:', matchupData.spread_date);
-
   try {
 
     // if the entry already includes the game_id, update it
-    const existingMatchup = await MatchupModel.findOne({ game_id: matchup.game_id });
-    if (matchup.game_id && existingMatchup) {
-        await MatchupModel.findByIdAndUpdate(existingMatchup._id, matchupData, { new: true });
-        return { message: 'Matchup updated successfully' };
+    const existingDoc = await MatchupModel.findOne({ api_game_id: matchup.api_game_id });
+    if (matchup.api_game_id && existingDoc) {
+      await MatchupModel.findByIdAndUpdate(existingDoc._id, matchupData, { new: true });
+      return { message: 'Matchup updated successfully' };
     } else if (matchup._id) {
       await MatchupModel.findByIdAndUpdate(matchup._id, matchupData, { new: true });
       return { message: 'Matchup updated successfully' };
@@ -59,7 +53,9 @@ export const postMatchup = async (matchup: Partial<MatchupDoc | MatchupClientTyp
 }
 
 export const postMatchups = async (matchups: (Partial<MatchupDoc | MatchupClientType> & { _id?: string })[]) => {
-    // i want to post more than one matchup
-    const promises = matchups.map(matchup => postMatchup(matchup));
-    await Promise.all(promises);
+  // i want to post more than one matchup
+  const promises = matchups.map(matchup => postMatchup(matchup));
+  await Promise.all(promises);
 }
+
+

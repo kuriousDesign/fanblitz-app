@@ -12,9 +12,9 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { RacerDriverClientType } from '@/models/Racer';
-import { RaceClientType } from '@/models/Race';
-import { PickClientType, DriverPredictionClientType } from '@/models/Pick';
+import { RacerDriverClientType } from '@/models/reference/Racer';
+import { RaceClientType } from '@/models/reference/Race';
+import { PickClientType, DriverPredictionClientType } from '@/models/reference/Pick';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { getDriverFullName } from '@/types/helpers';

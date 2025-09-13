@@ -4,15 +4,25 @@ import { useEffect, useState } from "react";
 import { motion, PanInfo } from "framer-motion";
 import { X } from "lucide-react";
 
-import { postPick } from "@/actions/postPick";
 import { MatchupClientType } from "@/models/Matchup";
+import { SpreadPickClientType } from "@/models/SpreadPick";
+import { GameWeekClientType } from "@/models/GameWeek";
+import { PlayerClientType } from "@/models/Player";
 
 interface FootballPickerProps {
   matchup:MatchupClientType;
+  gameWeek: GameWeekClientType;
+  player: PlayerClientType;
+  picks: SpreadPickClientType[];
+  setPicks: React.Dispatch<React.SetStateAction<SpreadPickClientType[]>>;
 }
 
-export default function FootballPicker({
+export default function FootballSpreadPickerComponent({
   matchup,
+  gameWeek,
+  player,
+  picks,
+  setPicks,
 
 }: FootballPickerProps) {
   const { home_team: homeTeam, away_team: awayTeam } = matchup;
@@ -28,19 +38,56 @@ export default function FootballPicker({
 
     setSelected(newSelection);
   };
+    // if matchup.matchup_id is not defined as an entry of picks array, then add it, otherwise update it
+
 
   // might need to useEffect with ties to selected to call the onPickChange function
   useEffect(() => {
 
-    // define an async function here to call 
-    const notifyPickChange = async () => {
-      const pick = selected ? selected as string : null;
-      if (!pick) return;
-      console.log("notifying pick change:", pick);
-      await postPick(pick);
-    };
-    notifyPickChange();
-  }, [selected]);
+    const existingPickIndex = picks.findIndex(pick => pick.matchup_id === matchup._id);
+    // if existing pick index and selected is null, then remove it from picks
+    if (existingPickIndex !== -1 && !selected) {
+      const updatedPicks = [...picks];
+      updatedPicks.splice(existingPickIndex, 1);
+      setPicks(updatedPicks);
+    } 
+    
+    else if (selected) {
+
+      const newDate = new Date().toISOString();
+      const newPick: SpreadPickClientType = {
+        matchup_id: matchup._id as string,
+        player_id: player._id as string,
+        selection: selected,
+        spread: matchup.spread,
+        spread_favorite_team: matchup.spread_favorite_team as string,
+        game_week_id: gameWeek._id as string,
+        createdOn: newDate,
+        updatedOn: newDate,
+      };
+      // add a new pick to the picks array
+      if (existingPickIndex === -1) {
+      const newPick: SpreadPickClientType = {
+        matchup_id: matchup._id as string,
+        player_id: "currentUserId", // Replace with actual user ID
+        selection: selected,
+        spread: matchup.spread,
+        spread_favorite_team: matchup.spread_favorite_team as string,
+        game_week_id: gameWeek._id as string,
+        createdOn: newDate,
+        updatedOn: newDate,
+      };
+      setPicks([...picks, newPick]);
+      } 
+      // Update existing pick
+      else {
+        newPick.createdOn = picks[existingPickIndex].createdOn;
+        const updatedPicks = [...picks];
+        updatedPicks[existingPickIndex] = newPick;
+        setPicks(updatedPicks);
+      }
+    }
+  }, [selected, matchup, picks, setPicks, gameWeek, player]);
 
   const resetPick = () => {
     setSelected(null);

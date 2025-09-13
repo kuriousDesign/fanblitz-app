@@ -2,7 +2,7 @@
 "use server";
 import axios from "axios";
 import { GameWithBookmakerSpread, Sports, convertGameWithBookmakerSpreadToMatchupClientType } from "@/types/football";
-import { getMatchupsByWeek } from "./getMatchups";
+import { getGameWeek, getMatchupsByGameWeek } from "./getMatchups";
 import { postMatchups } from "./postMatchup";
 import { MatchupClientType } from "@/models/Matchup";
 
@@ -118,12 +118,16 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
   }
 }
 
-export async function updateNcaaMatchupsByWeek(week: number): Promise<Partial<MatchupClientType>[]> {
-  const games = await getOddsApiNcaaMatchupsWithSpreadByWeek(week);
-  const matchups = games.map(game => convertGameWithBookmakerSpreadToMatchupClientType(game));
+export async function updateNcaaFootballGameWeekMatchups(gameWeekId: string): Promise<Partial<MatchupClientType>[]> {
+  const gameWeek = await getGameWeek(gameWeekId);
+  if (!gameWeek || !gameWeek.week) {
+    throw new Error(`Game week not found for id ${gameWeekId}`);
+  }
+  const games = await getOddsApiNcaaMatchupsWithSpreadByWeek(gameWeek.week);
+  const matchups = games.map(game => convertGameWithBookmakerSpreadToMatchupClientType(game, gameWeekId));
   //console.log(`Posting ${matchups.length} NCAA games with spreads for week ${week}`);
   await postMatchups(matchups);
-  const fetchedMatchups = await getMatchupsByWeek(week);
+  const fetchedMatchups = await getMatchupsByGameWeek(gameWeekId);
   //console.log(`Fetched ${fetchedMatchups.length} NCAA games with spreads for week ${week}`);
   //console.log('First converted matchup:');
   //console.log(matchups[0]);

@@ -8,10 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { RacerDriverClientType } from '@/models/Racer';
-import { GameClientType } from '@/models/Game';
-import { RaceClientType } from '@/models/Race';
-import { PickClientType, DriverPredictionClientType } from '@/models/Pick';
+import { RacerDriverClientType } from '@/models/reference/Racer';
+import { GameClientType } from '@/models/reference/Game';
+import { RaceClientType } from '@/models/reference/Race';
+import { PickClientType, DriverPredictionClientType } from '@/models/reference/Pick';
 import RacerPredictionSelectionDiv, { RacerPredictionDisplayProps } from './RacerPredictionSelectionDiv';
 import { Separator } from '@/components/ui/separator';
 

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { EventClientType } from '@/models/Event';
+import { EventClientType } from '@/models/reference/Event';
 import { postEvent } from '@/actions/postActions';
 import { getLinks } from '@/lib/link-urls';
 

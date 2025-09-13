@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Separator } from "../ui/separator"
-import { PickClientType } from "@/models/Pick";
+import { PickClientType } from "@/models/reference/Pick";
 
 
 function getCardTitle(filterLabel: string | undefined): string {

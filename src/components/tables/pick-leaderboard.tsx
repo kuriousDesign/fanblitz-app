@@ -8,14 +8,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { GameClientType } from "@/models/Game";
+import { GameClientType } from "@/models/reference/Game";
 
-import { PickClientType } from "@/models/Pick";
+import { PickClientType } from "@/models/reference/Pick";
 import { Separator } from "../ui/separator";
 import { PopoverPickDetails } from "../popover-pick-details";
-import { RacerClientType } from "@/models/Racer";
-import { HardChargerTableClientType } from "@/models/HardChargerTable";
-import { DriverClientType } from "@/models/Driver";
+import { RacerClientType } from "@/models/reference/Racer";
+import { HardChargerTableClientType } from "@/models/reference/HardChargerTable";
+import { DriverClientType } from "@/models/reference/Driver";
 
 export function convertIndexToLetter(index: number): string {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

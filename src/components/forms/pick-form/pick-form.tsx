@@ -15,12 +15,12 @@ import StepNamePick from './step-name-pick';
 //import StepHardChargers from './StepHardChargers';
 //import StepTieBreaker from './StepTieBreaker';
 
-import { DriverPredictionClientType, PickClientType } from '@/models/Pick';
+import { DriverPredictionClientType, PickClientType } from '@/models/reference/Pick';
 import { getGame, getRacersWithDriversForPickCreation, getRacesByGameId } from '@/actions/getActions';
-import { RacerDriverClientType } from '@/models/Racer';
+import { RacerDriverClientType } from '@/models/reference/Racer';
 import StepGameOverview from './step-game-overview';
-import { GameClientType } from '@/models/Game';
-import { RaceClientType } from '@/models/Race';
+import { GameClientType } from '@/models/reference/Game';
+import { RaceClientType } from '@/models/reference/Race';
 import StepRacerPredictions from '@/components/forms/pick-form/step-racer-predictions';
 import StepSubmit from './step-submit';
 import { Card, CardContent } from '@/components/ui';

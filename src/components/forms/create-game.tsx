@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { GameClientType } from '@/models/Game';
-import { RaceClientType } from '@/models/Race';
+import { GameClientType } from '@/models/reference/Game';
+import { RaceClientType } from '@/models/reference/Race';
 import { getRacesByEventId } from '@/actions/getActions';
 import { postGame } from '@/actions/postActions';
 import { getLinks } from '@/lib/link-urls';

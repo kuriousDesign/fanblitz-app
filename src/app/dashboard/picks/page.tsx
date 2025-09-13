@@ -16,7 +16,7 @@ import { getLinks } from "@/lib/link-urls";
 import { CardPicksGame } from "@/components/cards/picks-game";
 import { useEffect, useState } from "react";
 //import { GameClientType } from "@/models/Game";
-import { PickClientType } from "@/models/Pick";
+import { PickClientType } from "@/models/reference/Pick";
 import { PlayerClientType } from "@/models/Player";
 import Loading from "./loading";
 

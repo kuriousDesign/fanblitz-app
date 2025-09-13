@@ -16,7 +16,7 @@ import { IoMdAddCircle } from "react-icons/io";
 import { getIsAdmin } from "@/actions/userActions";
 import { SquarePen } from "lucide-react";
 import { getEvents } from "@/actions/getActions";
-import { EventClientType } from "@/models/Event";
+import { EventClientType } from "@/models/reference/Event";
 
 export default async function CardEvents() {
     const isAdmin = await getIsAdmin();

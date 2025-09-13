@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { HardChargerTableClientType, HardChargerEntryClientType } from "@/models/HardChargerTable";
+import { HardChargerTableClientType, HardChargerEntryClientType } from "@/models/reference/HardChargerTable";
 
 function convertIndexToLetter(index: number): string {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

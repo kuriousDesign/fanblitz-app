@@ -1,6 +1,6 @@
 import DriverForm from '@/components/forms/driver-form';
 import { getDriver } from '@/actions/getActions';
-import { DriverClientType } from '@/models/Driver';
+import { DriverClientType } from '@/models/reference/Driver';
 
 
 export default async function EditDriverPage({

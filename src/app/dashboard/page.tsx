@@ -19,9 +19,9 @@ import { Suspense } from "react";
 import { postNewPlayerWithUser } from "@/actions/postActions";
 import { DefaultUser } from "@auth/core/types";
 
-import ButtonUpdateAvailableWeekMatchups from "@/components/button-update-available-week-matchups";
-import { getMatchupsByWeek } from "@/actions/getMatchups";
-import FootballMatchupComponent from "@/components/FootballMatchupComponent";
+
+//import ButtonUpdateAvailableWeekMatchups from "@/components/button-update-available-week-matchups";
+
 
 
 const title = "Dashboard";
@@ -48,7 +48,12 @@ export default async function DashboardPage() {
     }
     const isAdmin = await getIsAdmin();
 
-    const matchups = await getMatchupsByWeek(3);
+    // const gameWeek3 = await getGameWeekByWeek(3);
+    // if (!gameWeek3 || !gameWeek3._id) {
+    //     return <div>No game week found for week 3</div>;
+    // }
+
+
 
     return (
         <div>
@@ -60,11 +65,18 @@ export default async function DashboardPage() {
                 <PageActions>
                     {isAdmin &&
                         <LinkButton
-                            href={getLinks().getEventsUrl()}>
-                            Events
+                            href={getLinks().getSeasonsUrl()}>
+                            Seasons
                         </LinkButton>
                     }
-                    {isAdmin && <ButtonUpdateAvailableWeekMatchups week={3} />}
+                    {isAdmin &&
+                        <LinkButton
+                            href={getLinks().getGameWeeksUrl()}>
+                            Game Weeks
+                        </LinkButton>
+                    }
+                    {/* {isAdmin && <ButtonUpdateAvailableWeekMatchups week={3} />} */}
+                   
 
                     <LinkButton
                         href={getLinks().getMakePicksUrl()}>
@@ -77,7 +89,7 @@ export default async function DashboardPage() {
                 <div className="theme-container container flex flex-1 flex-col gap-4">
                     <Suspense fallback={<TabCardSkeleton />}>
                         {/* <TabCardGames /> */}
-                        {matchups && matchups.length > 0 ? (
+                        {/* {matchups && matchups.length > 0 ? (
                             <>
                                 <div className="text-2xl font-bold mb-4 text-center">NCAA Week 3 Matchups: {matchups.length}</div>
                                 {matchups.map((matchup, index) => (
@@ -86,7 +98,7 @@ export default async function DashboardPage() {
                             </>
                         ) : (
                             <div>No NCAA games found.</div>
-                        )}
+                        )} */}
 
                     </Suspense>
                 </div>

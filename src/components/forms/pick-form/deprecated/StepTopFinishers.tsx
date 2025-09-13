@@ -1,8 +1,8 @@
 'use client';
 
-import { PickClientType } from '@/models/Pick';
+import { PickClientType } from '@/models/reference/Pick';
 import { useEffect, useState } from 'react';
-import { RacerDriverClientType } from '@/models/Racer';
+import { RacerDriverClientType } from '@/models/reference/Racer';
 
 
 export default function StepHardCharger({

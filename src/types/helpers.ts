@@ -1,5 +1,5 @@
 
-import { DriverClientType, DriverDoc } from '@/models/Driver';
+import { DriverClientType, DriverDoc } from '@/models/reference/Driver';
 import { Types } from 'mongoose';
 import { Hometown } from './globals';
 

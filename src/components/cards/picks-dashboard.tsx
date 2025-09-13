@@ -16,10 +16,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import { GameClientType } from "@/models/Game"
+import { GameClientType } from "@/models/reference/Game"
 import { Separator } from "../ui/separator"
 import { useRouter } from "next/navigation"
-import { PickClientType } from "@/models/Pick";
+import { PickClientType } from "@/models/reference/Pick";
 
   function getCardTitle(filterLabel: string | undefined): string {
     if (!filterLabel) return 'Picks';

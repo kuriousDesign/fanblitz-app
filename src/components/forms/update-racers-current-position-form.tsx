@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RacerClientType, RacerDriverClientType } from '@/models/Racer';
-import { RaceClientType } from '@/models/Race';
+import { RacerClientType, RacerDriverClientType } from '@/models/reference/Racer';
+import { RaceClientType } from '@/models/reference/Race';
 import { postRacer } from '@/actions/postActions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { getGamesByEventId, getRacersWithDriversByRaceId } from '@/actions/getActions';
 import { AlertCircle } from 'lucide-react';
-import { GameClientType } from '@/models/Game';
+import { GameClientType } from '@/models/reference/Game';
 import { calculateHardChargersLeaderboardByGameId } from '@/actions/scoreActions';
 
 // Props interface for the form

@@ -7,19 +7,20 @@ import { createModel } from '@/lib/createModel';
 
 const matchupSchema = new mongoose.Schema(
   {
-    source_api: { type: String, required: true },
-    game_id: { type: String, required: true }, // unique id from the source api
+    game_week_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    api_source: { type: String, required: true },
+    api_game_id: { type: String, required: true }, // the id from the source api that points to the actual football game
     sport: { type: String, required: true },
     home_team: { type: String, required: true },
     away_team: { type: String, required: true },
     game_date: { type: String, required: true },
-    week: { type: Number, required: true },
-    season: { type: Number, required: true },
+    //week: { type: Number, required: true },
+    //season: { type: Number, required: true },
     bookmaker: { type: String, required: true },
     spread: { type: Number, required: true },
     spread_date: { type: String, required: true},
     spread_favorite_team: {type: String, required: true },
-    can_be_picked: {type: String, required: true },
+    can_be_picked: {type: String, required: true }, //admin allows users to pick this game or not
   },
   {
     collection: 'matchups',

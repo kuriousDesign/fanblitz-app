@@ -1,6 +1,6 @@
 'use client';
 
-import { RaceClientType } from '@/models/Race';
+import { RaceClientType } from '@/models/reference/Race';
 import { postRace } from '@/actions/postActions';
 import { useRouter } from 'next/navigation';
 import { getLinks } from '@/lib/link-urls';

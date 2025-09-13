@@ -2,14 +2,14 @@
 
 import connectToDb from '@/lib/db';
 
-import { EventModel, EventDoc, EventClientType } from '@/models/Event';
-import { GameModel, GameDoc, GameClientType, GamePicksClientType } from '@/models/Game';
-import { PaymentModel, PaymentDoc, PaymentClientType } from '@/models/Payment';
-import { PickModel, PickDoc, PickClientType } from '@/models/Pick';
+import { EventModel, EventDoc, EventClientType } from '@/models/reference/Event';
+import { GameModel, GameDoc, GameClientType, GamePicksClientType } from '@/models/reference/Game';
+import { PaymentModel, PaymentDoc, PaymentClientType } from '@/models/reference/Payment';
+import { PickModel, PickDoc, PickClientType } from '@/models/reference/Pick';
 import { PlayerModel, PlayerDoc, PlayerClientType } from '@/models/Player';
-import { RaceModel, RaceDoc, RaceClientType } from '@/models/Race';
-import { DriverModel, DriverDoc, DriverClientType } from '@/models/Driver';
-import { RacerModel, RacerDoc, RacerClientType, RacerDriverClientType } from '@/models/Racer';
+import { RaceModel, RaceDoc, RaceClientType } from '@/models/reference/Race';
+import { DriverModel, DriverDoc, DriverClientType } from '@/models/reference/Driver';
+import { RacerModel, RacerDoc, RacerClientType, RacerDriverClientType } from '@/models/reference/Racer';
 
 
 import { createClientSafeGetAllHandler, createClientSafeGetHandler, createDocumentGetHandler } from '@/utils/actionHelpers';
@@ -17,7 +17,7 @@ import { Types } from 'mongoose';
 import { toClientObject } from '@/utils/mongooseHelpers';
 
 import { auth } from '@/auth';
-import { HardChargerTableModel, HardChargerTableClientType } from '@/models/HardChargerTable';
+import { HardChargerTableModel, HardChargerTableClientType } from '@/models/reference/HardChargerTable';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { CacheTags } from '@/lib/cache-tags';
 

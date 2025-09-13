@@ -6,8 +6,8 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 
-import { GameClientType } from "@/models/Game"
-import { RaceClientType } from "@/models/Race"
+import { GameClientType } from "@/models/reference/Game"
+import { RaceClientType } from "@/models/reference/Race"
 import { GameTypes } from "@/types/enums";
 
 

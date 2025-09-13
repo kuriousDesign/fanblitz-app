@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { PickClientType } from "@/models/Pick";
+import { PickClientType } from "@/models/reference/Pick";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 //import VenmoLink from "../VenmoLink";

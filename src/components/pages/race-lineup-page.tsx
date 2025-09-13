@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { DriverClientType } from '@/models/Driver';
-import { RaceClientType } from '@/models/Race';
-import { RacerClientType } from '@/models/Racer';
+import { DriverClientType } from '@/models/reference/Driver';
+import { RaceClientType } from '@/models/reference/Race';
+import { RacerClientType } from '@/models/reference/Racer';
 import CreateRacersRaceStartingLineupForm from '@/components/forms/create-racers-race-starting-lineup';
 import DriverForm from '@/components/forms/driver-form';
 import { Button } from '@/components/ui/button';

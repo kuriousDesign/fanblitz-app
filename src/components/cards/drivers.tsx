@@ -1,4 +1,4 @@
-import { DriverClientType } from "@/models/Driver";
+import { DriverClientType } from "@/models/reference/Driver";
 import { Button } from "@/components/ui/button";
 import {
     Card,

@@ -1,7 +1,7 @@
-import { RaceClientType } from "@/models/Race";
-import { RacerClientType } from "@/models/Racer";
+import { RaceClientType } from "@/models/reference/Race";
+import { RacerClientType } from "@/models/reference/Racer";
 import { getRace, getRacersWithDriversByRaceId } from "@/actions/getActions";
-import { DriverClientType } from "@/models/Driver";
+import { DriverClientType } from "@/models/reference/Driver";
 import { getLinks } from "@/lib/link-urls";
 import { LinkButton } from "@/components/LinkButton";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";

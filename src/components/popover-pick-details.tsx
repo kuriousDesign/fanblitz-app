@@ -1,10 +1,10 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { GameClientType } from '@/models/Game';
-import { HardChargerTableClientType } from '@/models/HardChargerTable';
-import { DriverPredictionClientType, PickClientType } from '@/models/Pick';
-import { RacerClientType } from '@/models/Racer';
-import { DriverClientType } from '@/models/Driver';
+import { GameClientType } from '@/models/reference/Game';
+import { HardChargerTableClientType } from '@/models/reference/HardChargerTable';
+import { DriverPredictionClientType, PickClientType } from '@/models/reference/Pick';
+import { RacerClientType } from '@/models/reference/Racer';
+import { DriverClientType } from '@/models/reference/Driver';
 
 import {
     Table,

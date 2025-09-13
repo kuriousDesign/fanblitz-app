@@ -2,12 +2,12 @@
 
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { RacerClientType } from '@/models/Racer';
-import { DriverClientType } from '@/models/Driver';
+import { RacerClientType } from '@/models/reference/Racer';
+import { DriverClientType } from '@/models/reference/Driver';
 import { postRacer } from '@/actions/postActions';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { RaceClientType } from '@/models/Race';
+import { RaceClientType } from '@/models/reference/Race';
 import { Combobox } from '@/components/ui/combobox';
 import { useMemo } from 'react';
 

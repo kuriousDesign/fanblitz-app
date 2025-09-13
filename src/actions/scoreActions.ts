@@ -1,16 +1,16 @@
 'use server';
 
 import { getDriver, getRacersByRaceId, getRacesByGameId, getGame, getPicksByGameId } from "@/actions/getActions";
-import { GameClientType } from "@/models/Game";
-import { PickClientType } from "@/models/Pick";
-import { RaceClientType } from "@/models/Race";
-import { RacerClientType } from "@/models/Racer";
+import { GameClientType } from "@/models/reference/Game";
+import { PickClientType } from "@/models/reference/Pick";
+import { RaceClientType } from "@/models/reference/Race";
+import { RacerClientType } from "@/models/reference/Racer";
 
-import { DriverClientType } from "@/models/Driver";
+import { DriverClientType } from "@/models/reference/Driver";
 import { getDriverFullName } from "@/types/helpers";
 import { postGame, postHardChargerTable, postPick } from "@/actions/postActions";
 import { GameStates } from "@/types/enums";
-import { HardChargerEntryClientType, HardChargerTableClientType } from "@/models/HardChargerTable";
+import { HardChargerEntryClientType, HardChargerTableClientType } from "@/models/reference/HardChargerTable";
 import { getLinks } from "@/lib/link-urls";
 import { revalidatePath } from "next/cache";
 

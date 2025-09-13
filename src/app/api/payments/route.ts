@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { PaymentClientType } from '@/models/Payment'
+import { PaymentClientType } from '@/models/reference/Payment'
 //import { postPayment } from '@/actions/postActions'
 
 export async function POST(request: Request) {

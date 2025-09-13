@@ -22,17 +22,17 @@ import TabCard, { FilterOption } from '@/components/cards/tab-card';
 import PeekDiv from '@/components/cards/pick-div';
 import { GameStates, gameStatesToString } from '@/types/enums';
 
-import { GameClientType } from '@/models/Game';
+import { GameClientType } from '@/models/reference/Game';
 import BtnChangeGameState from '../../../components/button-change-game-state';
-import { RaceClientType } from '@/models/Race';
+import { RaceClientType } from '@/models/reference/Race';
 import TablePickLeaderboard, { PickLeaderboardSkeleton } from '@/components/tables/pick-leaderboard';
 import { updateGamePot, updatePicksScoresByGame } from '@/actions/scoreActions';
 
 import VenmoLink from '@/components/VenmoLink';
 import CardWinningPick from '@/components/card-winning-pick';
-import { PickClientType } from '@/models/Pick';
-import { RacerClientType } from '@/models/Racer';
-import { DriverClientType } from '@/models/Driver';
+import { PickClientType } from '@/models/reference/Pick';
+import { RacerClientType } from '@/models/reference/Racer';
+import { DriverClientType } from '@/models/reference/Driver';
 
 export default async function GamePage({ params }: { params: Promise<{ gameId: string }> }) {
 	const playerPromise = getCurrentPlayer();

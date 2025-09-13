@@ -1,8 +1,4 @@
-// the point of this file is to provide helper functions for creating urls for links and navigation
-//import { usePathname } from "next/navigation";
-
 export function getLinks() {
-    //const pathname = usePathname();
 
     const getHomeUrl = () => {
         return '/';
@@ -12,10 +8,14 @@ export function getLinks() {
         return '/admin';
     };
 
+    const getPlayersUrl = () => {
+        return `${getAdminUrl()}/players`;
+    }
+
     const getDashboardUrl = () => {
         return '/dashboard';
     };
-    
+
     const getDriversUrl = () => {
         return '/drivers';
     };
@@ -23,8 +23,28 @@ export function getLinks() {
         return '/events';
     };
 
+    const getGameWeeksUrl = () => {
+        return '/gameweeks';
+    }
+    const getSeasonsUrl = () => {
+        return '/seasons';
+    }
+
+    const getGameWeekUrl = (gameWeekId?: string) => {
+        return `${getGameWeeksUrl()}/${gameWeekId || '_'}`;
+    }
+
+    const getEditGameWeekUrl = (gameWeekId: string) => {
+        return `${getGameWeekUrl(gameWeekId)}/edit`;
+    }
+
+    const getCreateGameWeekUrl = () => {
+        return `${getGameWeeksUrl()}/create`;
+    }
+            
     const getMakePicksUrl = () => {
-        return '/makepicks';
+        return '/make-picks';
+ 
     }
 
     const getEventUrl = (eventId?: string) => {
@@ -42,7 +62,6 @@ export function getLinks() {
     const getEditDriverUrl = (driverId: string) => {
         return `${getDriversUrl()}/${driverId}/edit`;
     };
-    
 
     const getGamesUrl = () => {
         return '/games';
@@ -51,7 +70,6 @@ export function getLinks() {
     const getGameUrl = (gameId?: string) => {
         return `${getGamesUrl()}/${gameId || '_'}`;
     };
-    
 
     const getCreateEventUrl = () => {
         return `${getEventsUrl()}/create`;
@@ -75,7 +93,6 @@ export function getLinks() {
         return `${getRacesUrl(eventId)}/${raceId}/edit`;
     };
 
-
     const getCreateRacerUrl = (eventId: string, raceId: string) => {
         return `${getRaceUrl(eventId, raceId)}/create-racer`;
     };
@@ -98,7 +115,7 @@ export function getLinks() {
     const getPlayerPicksUrl = () => {
         return `${getDashboardUrl()}/picks`;
     };
-    
+
     const getCreatePickUrl = (gameId: string) => {
         return `${getGameUrl(gameId)}/create-pick`;
     };
@@ -117,11 +134,17 @@ export function getLinks() {
     };
 
     const getUpdateRaceStandingsUrl = (gameId: string, raceId: string) => {
-        return `${getGameRaceUrl(gameId,raceId)}/update`;
+        return `${getGameRaceUrl(gameId, raceId)}/update`;
     }
 
     return {
+        getPlayersUrl,
+        getSeasonsUrl,
         getMakePicksUrl,
+        getGameWeekUrl,
+        getGameWeeksUrl,
+        getEditGameWeekUrl,
+        getCreateGameWeekUrl,
         getAdminUrl,
         getCreateEventUrl,
         getCreateRaceUrl,

@@ -1,5 +1,5 @@
 import { getGamesByStatus } from "@/actions/getActions";
-import { GameClientType } from "@/models/Game";
+import { GameClientType } from "@/models/reference/Game";
 import Link from "next/link";
 
 

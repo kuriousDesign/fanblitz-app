@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { GameClientType } from "@/models/Game";
+import { GameClientType } from "@/models/reference/Game";
 import { IoMdAddCircle } from "react-icons/io";
 import { Gamepad2 } from "lucide-react";
 
