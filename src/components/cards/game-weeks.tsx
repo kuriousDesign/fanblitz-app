@@ -18,17 +18,25 @@ import { SquarePen } from "lucide-react";
 
 import { getGameWeeks } from "@/actions/getMatchups";
 import { GameWeekClientType } from "@/models/GameWeek";
+import ServerActionButton from "../buttons/ServerActionButton";
+import { createAndPostGameWeeksForSeason } from "@/actions/postGameWeek";
 
 export default async function CardGameWeeks() {
     const isAdmin = await getIsAdmin();
     const gameWeeks = await getGameWeeks();
     console.log("GameWeeks: ", gameWeeks.length);
+
+            const create2025GameWeeks = async () => {
+                "use server";
+                console.log('Creating 2025 game weeks...');
+                await createAndPostGameWeeksForSeason(2025);
+            };
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Game Weeks</CardTitle>
+                <CardTitle>Game Weeks 2025</CardTitle>
                 <CardDescription>
-                    Active game weeks
+                    Game weeks that will contain weekly matchups.
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-2">
@@ -36,6 +44,7 @@ export default async function CardGameWeeks() {
                     <IoMdAddCircle />
                     Game Week
                 </LinkButton>}
+                {isAdmin && gameWeeks.length < 1 && <ServerActionButton label="Create 2025 Game Weeks" serverAction={create2025GameWeeks} />}
                 {gameWeeks?.map((gameWeek: GameWeekClientType) => (
 
                     <div key={gameWeek._id}>

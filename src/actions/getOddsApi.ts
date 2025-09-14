@@ -124,6 +124,10 @@ export async function updateNcaaFootballGameWeekMatchups(gameWeekId: string): Pr
     throw new Error(`Game week not found for id ${gameWeekId}`);
   }
   const games = await getOddsApiNcaaMatchupsWithSpreadByWeek(gameWeek.week);
+  if (games.length === 0) {
+    console.error(`No NCAA games with spreads found for week ${gameWeek.week}`);
+    return [];
+  }
   const matchups = games.map(game => convertGameWithBookmakerSpreadToMatchupClientType(game, gameWeekId));
   //console.log(`Posting ${matchups.length} NCAA games with spreads for week ${week}`);
   await postMatchups(matchups);

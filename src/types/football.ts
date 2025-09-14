@@ -48,6 +48,17 @@ export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWith
         throw new Error("Spread market not found");
     }
 
+    let favoriteTeam = '';
+    const home_team_spread = spreadMarket.outcomes.find(o => o.name === game.home_team);
+    const away_team_spread = spreadMarket.outcomes.find(o => o.name === game.away_team);
+    if((home_team_spread?.point ?? 0) > 0) {
+        favoriteTeam = 'home_team';
+    } else if ((away_team_spread?.point ?? 0) > 0) {
+        favoriteTeam = 'away_team';
+    } else {
+        favoriteTeam = 'unknown';
+    }
+
     const matchup: Partial<MatchupClientType> = {
         api_source: "oddsApi",
         api_game_id: game.id,
@@ -57,9 +68,9 @@ export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWith
         game_date: game.commence_time,
         game_week_id: gameWeekId,
         bookmaker: game.bookmaker.title,
-        spread: game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].point || 0,
+        spread: Math.abs(game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].point || 0),
         spread_date: game.bookmaker.last_update,
-        spread_favorite_team: game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].name || '',
+        spread_favorite_team: favoriteTeam,
         // can_be_picked: 'yes',
     };
     return matchup;

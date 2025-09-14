@@ -1,10 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { getActiveGameWeek, getMatchupsByGameWeek as getMatchupsByGameWeek, getSpreadPicksByPlayerAndGameWeek } from "@/actions/getMatchups";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { getGameWeekByWeek, getMatchupsByGameWeek as getMatchupsByGameWeek, getSpreadPickByPlayerAndGameWeek } from "@/actions/getMatchups";
 import FootballSpreadPickerComponent from "@/components/football/FootballSpreadPickerComponent";
 import { MatchupClientType } from "@/models/Matchup";
-import { SpreadPickClientType } from "@/models/SpreadPick";
+import { MatchupSpreadPredictionClientType, SpreadPickClientType } from "@/models/SpreadPick";
 import { PlayerClientType } from "@/models/Player";
 import { getCurrentPlayer } from "@/actions/getActions";
 // import { useParams } from "next/navigation";
@@ -14,6 +14,7 @@ import { getIsAdmin } from "@/actions/userActions";
 import { updateNcaaFootballGameWeekMatchups } from "@/actions/getOddsApi";
 import { TabCardSkeleton } from "@/components/cards/tab-card";
 import { PageActions, PageHeader, PageHeaderHeading, PageHeaderDescription } from "@/components/page-header";
+import { postSpreadPick } from "@/actions/postPick";
 
 
 const title = "Make Picks";
@@ -26,12 +27,13 @@ export default function MakePicksPage() {
   //const params = useParams();
   //const { gameWeekId } = params;
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [picks, setPicks] = useState<SpreadPickClientType[]>([]);
+  const [predictions, setPredictions] = useState<MatchupSpreadPredictionClientType[]>([]);
   const [matchups, setMatchups] = useState<MatchupClientType[]>([]);
   const [player, setPlayer] = useState<PlayerClientType | null>(null); // Example player ID
   const [gameWeek, setGameWeek] = useState<GameWeekClientType | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
+  const spreadPickRef = useRef<SpreadPickClientType | null>(null);
   // fetch matchups on load
   useEffect(() => {
     const fetchData = async () => {
@@ -42,20 +44,40 @@ export default function MakePicksPage() {
         return;
       }
 
-      const gameWeekData = await getActiveGameWeek();
+      //const gameWeekData = await getActiveGameWeek();
+      const gameWeekData = await getGameWeekByWeek(4); // temp fix to week 4
       if (!gameWeekData || !gameWeekData._id) {
         console.error("No active game week found");
         return;
       }
       const matchupsPromise = getMatchupsByGameWeek(gameWeekData._id);
-      const picksPromise = getSpreadPicksByPlayerAndGameWeek(playerData._id, gameWeekData._id);
-      const [matchupsData, picksData] = await Promise.all([matchupsPromise, picksPromise]);
+      const spreadPickPromise = getSpreadPickByPlayerAndGameWeek(playerData._id, gameWeekData._id);
+      const [matchupsData, spreadPickData] = await Promise.all([matchupsPromise, spreadPickPromise]);
 
       setIsAdmin(await getIsAdmin());
       setGameWeek(gameWeekData);
       setMatchups(matchupsData);
       setPlayer(playerData);
-      setPicks(picksData);
+
+      if (spreadPickData) {
+        spreadPickRef.current = spreadPickData;
+      } else {
+        spreadPickRef.current = {
+          name: playerData.name,
+          player_id: playerData._id,
+          game_week_id: gameWeekData._id,
+          score_total: 0,
+          outcome: null,
+          matchup_spread_predictions: [],
+          nickname: 'week ' + gameWeekData.week + ' pick',
+          is_paid: false,
+          status: 'initialized',
+          rank: 0,
+          payout: 0
+        };
+      }
+
+      setPredictions(spreadPickRef.current.matchup_spread_predictions || []);
       setIsLoading(false);
     };
 
@@ -66,14 +88,24 @@ export default function MakePicksPage() {
   useEffect(() => {
     const postData = async () => {
       // Post picks to server
-      if (picks && picks.length > 0) {
-        console.log("Posting picks to server:", picks);
-        // await postPicks(picks);
+      if (!spreadPickRef.current) {
+        //console.error("No spreadPickRef current");
+        return;
       }
+      if (predictions.length > 0 && spreadPickRef.current.status === 'initialized') {
+        spreadPickRef.current.status = 'picking';
+      }
+
+      if (spreadPickRef.current.status === 'picking') {
+        spreadPickRef.current.matchup_spread_predictions = predictions;
+        console.log("Posting picks to server:", predictions[predictions.length - 1]);
+        await postSpreadPick(spreadPickRef.current);
+      }
+
     };
     postData();
 
-  }, [picks]);
+  }, [predictions]);
 
   if (isLoading) {
     return <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 w-screen gap-1">
@@ -137,7 +169,7 @@ export default function MakePicksPage() {
           <Suspense fallback={<TabCardSkeleton />}>
             {matchups && matchups.length > 0 && matchups.map((matchup, index) => (
               <div key={index} className="w-full max-w-md p-4 bg-white rounded-lg shadow-md">
-                <FootballSpreadPickerComponent matchup={matchup} gameWeek={gameWeek} picks={picks} setPicks={setPicks} player={player} />
+                <FootballSpreadPickerComponent matchup={matchup} gameWeek={gameWeek} predictions={predictions} setPredictions={setPredictions} player={player} />
               </div>
             ))}
 

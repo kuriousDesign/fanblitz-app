@@ -38,13 +38,18 @@ export const getMatchupsByGameWeek = async (gameWeekId: string): Promise<Matchup
   return matchups;
 };
 
-export const getSpreadPicksByPlayerAndGameWeek = async (playerId: string, gameWeekId: string): Promise<SpreadPickClientType[]> => {
+export const getSpreadPickByPlayerAndGameWeek = async (playerId: string, gameWeekId: string): Promise<SpreadPickClientType | null> => {
   const filter = { 
     player_id: new Types.ObjectId(playerId),
     game_week_id: new Types.ObjectId(gameWeekId)
   };
   const spreadPicks = await getSpreadPicks(filter);
-  return spreadPicks;
+  if(!spreadPicks || spreadPicks.length === 0 ) {
+    return null;
+  } else if (spreadPicks.length > 1) {
+    throw new Error(`Multiple spread picks found for player ${playerId} and game week ${gameWeekId}`);
+  }
+  return spreadPicks[0];
 };
 
 export const getGameWeekByWeek = async (week: number): Promise<GameWeekClientType> => {
@@ -56,4 +61,26 @@ export const getGameWeekByWeek = async (week: number): Promise<GameWeekClientTyp
     throw new Error(`Multiple game weeks found for week ${week}`);
   }
   return gameWeeks[0];
+};
+
+export const getCurrentGameWeek = async (): Promise<GameWeekClientType | null> => {
+  const now = new Date();
+  const filter = { start_date: { $lte: now }, end_date: { $gte: now } };
+  const gameWeeks = await getGameWeeks(filter);
+  if(!gameWeeks || gameWeeks.length === 0 ) {
+    return null;
+  } else if (gameWeeks.length > 1) {
+    throw new Error(`Multiple active game weeks found`);
+  }
+  return gameWeeks[0];
+
+};
+
+export const getCurrentPlayerSpreadPick = async (playerId: string): Promise<SpreadPickClientType | null> => {
+  const currentGameWeek = await getCurrentGameWeek();
+  if (!currentGameWeek) {
+    throw new Error("No active game week found");
+  }
+  const spreadPick = await getSpreadPickByPlayerAndGameWeek(playerId, currentGameWeek._id as string);
+  return spreadPick;
 };

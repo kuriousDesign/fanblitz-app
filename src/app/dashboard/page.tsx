@@ -63,12 +63,7 @@ export default async function DashboardPage() {
                 </PageHeaderHeading>
                 <PageHeaderDescription>{description}</PageHeaderDescription>
                 <PageActions>
-                    {isAdmin &&
-                        <LinkButton
-                            href={getLinks().getSeasonsUrl()}>
-                            Seasons
-                        </LinkButton>
-                    }
+
                     {isAdmin &&
                         <LinkButton
                             href={getLinks().getGameWeeksUrl()}>

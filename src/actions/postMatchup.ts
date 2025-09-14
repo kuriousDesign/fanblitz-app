@@ -54,6 +54,7 @@ export const postMatchup = async (matchup: Partial<MatchupDoc | MatchupClientTyp
 
 export const postMatchups = async (matchups: (Partial<MatchupDoc | MatchupClientType> & { _id?: string })[]) => {
   // i want to post more than one matchup
+  console.log(`Posting ${matchups.length} matchups`);
   const promises = matchups.map(matchup => postMatchup(matchup));
   await Promise.all(promises);
 }
