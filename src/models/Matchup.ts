@@ -21,6 +21,10 @@ const matchupSchema = new mongoose.Schema(
     spread_date: { type: String, required: true},
     spread_favorite_team: {type: String, required: true },
     can_be_picked: {type: String, required: true }, //admin allows users to pick this game or not
+    home_team_score: { type: Number, default: 0 }, // final score, updated after game
+    away_team_score: { type: Number, default: 0 }, // final score, updated after game
+    status: { type: String, default: 'scheduled' }, // scheduled, in_progress, completed
+    winner: { type: String, default: '' }, // home_team, away_team, push, updated after game
   },
   {
     collection: 'matchups',

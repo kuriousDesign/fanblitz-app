@@ -110,6 +110,9 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
 
     //console.log("first simplified game");
     //console.log(simplified[0]);
+    if (nonNullFiltered.length === 0) {
+      console.warn(`No NCAA games with spreads found for week ${week} from ${commenceTimeFrom} to ${commenceTimeTo}`);
+    }
 
     return nonNullFiltered;
   } catch (error: unknown) {
@@ -118,7 +121,7 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
   }
 }
 
-export async function updateNcaaFootballGameWeekMatchups(gameWeekId: string): Promise<Partial<MatchupClientType>[]> {
+export async function updateSpreadDataNcaaFootballGameWeekMatchups(gameWeekId: string): Promise<Partial<MatchupClientType>[]> {
   const gameWeek = await getGameWeek(gameWeekId);
   if (!gameWeek || !gameWeek.week) {
     throw new Error(`Game week not found for id ${gameWeekId}`);

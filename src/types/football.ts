@@ -71,6 +71,12 @@ export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWith
         spread: Math.abs(game.bookmaker.markets.find(m => m.key === "spreads")?.outcomes[0].point || 0),
         spread_date: game.bookmaker.last_update,
         spread_favorite_team: favoriteTeam,
+        home_team_score: 0,
+        away_team_score: 0,
+        status: 'scheduled',
+        winner: '',
+        //season: currentYear,
+        //week: game.week,
         // can_be_picked: 'yes',
     };
     return matchup;

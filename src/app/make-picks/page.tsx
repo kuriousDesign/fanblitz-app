@@ -11,7 +11,7 @@ import { getCurrentPlayer } from "@/actions/getActions";
 import { GameWeekClientType } from "@/models/GameWeek";
 import ServerActionButton from "@/components/buttons/ServerActionButton";
 import { getIsAdmin } from "@/actions/userActions";
-import { updateNcaaFootballGameWeekMatchups } from "@/actions/getOddsApi";
+import { updateSpreadDataNcaaFootballGameWeekMatchups } from "@/actions/getOddsApi";
 import { TabCardSkeleton } from "@/components/cards/tab-card";
 import { PageActions, PageHeader, PageHeaderHeading, PageHeaderDescription } from "@/components/page-header";
 import { postSpreadPick } from "@/actions/postPick";
@@ -134,7 +134,7 @@ export default function MakePicksPage() {
         console.error("No active game week found");
         return;
       }
-      await updateNcaaFootballGameWeekMatchups(gameWeek._id as string);
+      await updateSpreadDataNcaaFootballGameWeekMatchups(gameWeek._id as string);
     };
     return <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 w-screen gap-1">
       {isAdmin && <ServerActionButton label="Update Available Matchups" serverAction={updateMatchups} />}

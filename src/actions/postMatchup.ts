@@ -27,6 +27,10 @@ export const postMatchup = async (matchup: Partial<MatchupDoc | MatchupClientTyp
     spread_date: matchup.spread_date!,
     spread_favorite_team: matchup.spread_favorite_team!,
     can_be_picked: matchup.can_be_picked || 'yes',
+    home_team_score: matchup.home_team_score || 0,
+    away_team_score: matchup.away_team_score || 0,
+    status: matchup.status || 'scheduled',
+    winner: matchup.winner || '',
   };
 
   try {

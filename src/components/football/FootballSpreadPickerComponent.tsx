@@ -21,8 +21,8 @@ export default function FootballSpreadPickerComponent({
   matchup,
   gameWeek,
   player,
-  predictions: picks,
-  setPredictions: setPicks,
+  predictions,
+  setPredictions,
 
 }: FootballPickerProps) {
   const { home_team: homeTeam, away_team: awayTeam } = matchup;
@@ -31,17 +31,17 @@ export default function FootballSpreadPickerComponent({
 
 
  function handleSelection(selection: "home" | "away" | null) {
-    const existingPickIndex = picks.findIndex(pick => pick.matchup_id === matchup._id);
+    const existingPickIndex = predictions.findIndex(prediction => prediction.matchup_id === matchup._id);
     // if existing pick index and selected is null, then remove it from picks
     if (existingPickIndex !== -1 && !selection) {
-      const updatedPicks = [...picks];
+      const updatedPicks = [...predictions];
       updatedPicks.splice(existingPickIndex, 1);
       console.log("Removing pick for matchup:", matchup._id);
-      setPicks(updatedPicks);
+      setPredictions(updatedPicks);
     } else if (selection) {
 
       const newDate = new Date().toISOString();
-      const newPick: MatchupSpreadPredictionClientType = {
+      const newPrediction: MatchupSpreadPredictionClientType = {
         matchup_id: matchup._id as string,
         selection: selection,
         spread_points: matchup.spread,
@@ -52,14 +52,14 @@ export default function FootballSpreadPickerComponent({
       };
       // add a new pick to the picks array
       if (existingPickIndex === -1) {
-        setPicks([...picks, newPick]);
+        setPredictions([...predictions, newPrediction]);
       }
       // Update existing pick
       else {
-        newPick.createdOn = picks[existingPickIndex].createdOn;
-        const updatedPicks = [...picks];
-        updatedPicks[existingPickIndex] = newPick;
-        setPicks(updatedPicks);
+        newPrediction.createdOn = predictions[existingPickIndex].createdOn;
+        const updatedPicks = [...predictions];
+        updatedPicks[existingPickIndex] = newPrediction;
+        setPredictions(updatedPicks);
       }
     }
   };
@@ -82,7 +82,7 @@ export default function FootballSpreadPickerComponent({
   useEffect(() => {
 
 
-  }, [selected, matchup, picks, setPicks, gameWeek, player]);
+  }, [selected, matchup, predictions, setPredictions, gameWeek, player]);
 
   const resetPick = () => {
     handleSelection(null);
