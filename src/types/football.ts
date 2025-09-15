@@ -51,9 +51,10 @@ export function convertGameWithBookmakerSpreadToMatchupClientType(game: GameWith
     let favoriteTeam = '';
     const home_team_spread = spreadMarket.outcomes.find(o => o.name === game.home_team);
     const away_team_spread = spreadMarket.outcomes.find(o => o.name === game.away_team);
-    if((home_team_spread?.point ?? 0) > 0) {
+  
+    if((home_team_spread?.point ?? 0) < 0) {
         favoriteTeam = 'home_team';
-    } else if ((away_team_spread?.point ?? 0) > 0) {
+    } else if ((away_team_spread?.point ?? 0) < 0) {
         favoriteTeam = 'away_team';
     } else {
         favoriteTeam = 'unknown';

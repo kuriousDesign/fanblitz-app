@@ -71,6 +71,7 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
 
     // give me the full query string on console
     //console.log("Odds API request URL:", oddsRes.request.res.responseUrl);
+    //console.log(oddsRes.data[0]);
 
     const filtered: GameWithBookmakerSpread[] = oddsRes.data.map((game: any) => {
       let bookmaker = null;
@@ -83,6 +84,7 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
         console.warn(`No queried bookmaker found for game ${game.id} between ${game.home_team} and ${game.away_team} at ${game.commence_time}`);
         return null; // skip this game if no bookmaker found
       }
+      
       const gameWithBookmakerSpread: GameWithBookmakerSpread = {
         id: game.id,
         commence_time: game.commence_time,

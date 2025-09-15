@@ -6,40 +6,47 @@ import { X } from "lucide-react";
 
 import { MatchupClientType } from "@/models/Matchup";
 import { MatchupSpreadPredictionClientType } from "@/models/SpreadPick";
-import { GameWeekClientType } from "@/models/GameWeek";
-import { PlayerClientType } from "@/models/Player";
 
 interface FootballPickerProps {
-  matchup:MatchupClientType;
-  gameWeek: GameWeekClientType;
-  player: PlayerClientType;
+  matchup: MatchupClientType;
   predictions: MatchupSpreadPredictionClientType[];
-  setPredictions: React.Dispatch<React.SetStateAction<MatchupSpreadPredictionClientType[]>>;
+  setPredictions: React.Dispatch<
+    React.SetStateAction<MatchupSpreadPredictionClientType[]>
+  >;
 }
 
 export default function FootballSpreadPickerComponent({
   matchup,
-  gameWeek,
-  player,
   predictions,
   setPredictions,
-
 }: FootballPickerProps) {
   const { home_team: homeTeam, away_team: awayTeam } = matchup;
   const [selected, setSelected] = useState<"home" | "away" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // 🔑 Sync local state with predictions from parent
+  useEffect(() => {
+    const existingPick = predictions.find(
+      (prediction) => prediction.matchup_id === matchup._id
+    );
+    if (existingPick) {
+      setSelected(existingPick.selection as "home" | "away" | null);
+    } else {
+      setSelected(null);
+    }
+  }, [predictions, matchup._id]);
 
- function handleSelection(selection: "home" | "away" | null) {
-    const existingPickIndex = predictions.findIndex(prediction => prediction.matchup_id === matchup._id);
-    // if existing pick index and selected is null, then remove it from picks
+  function handleSelection(selection: "home" | "away" | null) {
+    const existingPickIndex = predictions.findIndex(
+      (prediction) => prediction.matchup_id === matchup._id
+    );
+
     if (existingPickIndex !== -1 && !selection) {
+      // remove pick
       const updatedPicks = [...predictions];
       updatedPicks.splice(existingPickIndex, 1);
-      console.log("Removing pick for matchup:", matchup._id);
       setPredictions(updatedPicks);
     } else if (selection) {
-
       const newDate = new Date().toISOString();
       const newPrediction: MatchupSpreadPredictionClientType = {
         matchup_id: matchup._id as string,
@@ -50,22 +57,24 @@ export default function FootballSpreadPickerComponent({
         createdOn: newDate,
         updatedOn: newDate,
       };
-      // add a new pick to the picks array
+
       if (existingPickIndex === -1) {
+        // add new
         setPredictions([...predictions, newPrediction]);
-      }
-      // Update existing pick
-      else {
+      } else {
+        // update existing
         newPrediction.createdOn = predictions[existingPickIndex].createdOn;
         const updatedPicks = [...predictions];
         updatedPicks[existingPickIndex] = newPrediction;
         setPredictions(updatedPicks);
       }
     }
-  };
+  }
 
-
-  const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleDragEnd = (
+    _: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
     setIsDragging(false);
 
     let newSelection: "home" | "away" | null = null;
@@ -73,16 +82,8 @@ export default function FootballSpreadPickerComponent({
     else if (info.offset.x < -100) newSelection = "away";
 
     setSelected(newSelection);
-    handleSelection(newSelection)
+    handleSelection(newSelection);
   };
-    // if matchup.matchup_id is not defined as an entry of picks array, then add it, otherwise update it
-
-
-  // might need to useEffect with ties to selected to call the onPickChange function
-  useEffect(() => {
-
-
-  }, [selected, matchup, predictions, setPredictions, gameWeek, player]);
 
   const resetPick = () => {
     handleSelection(null);
@@ -94,25 +95,23 @@ export default function FootballSpreadPickerComponent({
       <div className="flex w-full justify-center gap-8 items-center relative">
         {/* Away Team */}
         <div
-          className={`flex-1 text-center text-md font-semibold h-20 ${
-            selected === "away" ? "text-yellow-500 bg-black" : "text-gray-800 bg-black/0"
-          }`}
+          className={`flex-1 text-center text-md font-semibold h-20 ${selected === "away"
+              ? "text-yellow-500 bg-black"
+              : "text-gray-800 bg-black/0"
+            }`}
         >
           {awayTeam}
+          <div className="text-sm font-normal text-gray-500">
+            {matchup.spread_favorite_team === 'away_team' ? `(-${matchup.spread})` : `(+${matchup.spread})`}
+          </div>
         </div>
 
         {/* Football + Circle + Cancel */}
         <div className="relative flex items-center justify-center">
-          {/* Background circle */}
           <motion.div
-            className={`absolute w-16 h-16 rounded-full ${
-              selected ? "bg-gray-300/20" : "bg-gray-200"
-            }`}
-            animate={{ scale: selected ? 1.0 : 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className={`absolute w-16 h-16 rounded-full ${selected ? "bg-gray-300/20" : "bg-gray-200"
+              }`}
           />
-
-          {/* Cancel button */}
           {selected && !isDragging && (
             <button
               onClick={resetPick}
@@ -121,21 +120,17 @@ export default function FootballSpreadPickerComponent({
               <X className="w-6 h-6 text-gray-700" />
             </button>
           )}
-
-          {/* Football draggable */}
           <motion.div
-            className={`w-16 h-16 rounded-full flex items-center justify-center cursor-grab relative z-10 ${
-              selected ? "bg-green-500/20 animate-pulse" : "bg-brown-600 shadow-lg"
-            }`}
+            className={`w-16 h-16 rounded-full flex items-center justify-center cursor-grab relative z-10 ${selected ? "bg-green-500/20 animate-pulse" : "bg-brown-600 shadow-lg"
+              }`}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             onDragStart={() => setIsDragging(true)}
             onDragEnd={handleDragEnd}
-            initial={{ x: 0 }}
             animate={{
               x: selected === "home" ? 140 : selected === "away" ? -140 : 0,
             }}
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             <span className="text-2xl">🏈</span>
           </motion.div>
@@ -143,11 +138,15 @@ export default function FootballSpreadPickerComponent({
 
         {/* Home Team */}
         <div
-          className={`flex-1 text-center text-md font-semibold h-20 ${
-            selected === "home" ? "text-pink-500 bg-black" : "text-gray-800 bg-black/0"
-          }`}
+          className={`flex-1 text-center text-md font-semibold h-20 ${selected === "home"
+              ? "text-pink-500 bg-black"
+              : "text-gray-800 bg-black/0"
+            }`}
         >
           {homeTeam}
+          <div className="text-sm font-normal text-gray-500">
+            {matchup.spread_favorite_team === 'home_team' ? `(-${matchup.spread})` : `(+${matchup.spread})`}
+          </div>
         </div>
       </div>
     </div>
