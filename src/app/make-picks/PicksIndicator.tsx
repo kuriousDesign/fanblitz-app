@@ -7,26 +7,24 @@ export default function PicksIndicator({
   numSelections: number;
 }) {
   const percentage = Math.min((numPicks / numSelections) * 100, 100);
-  const radius = 30; // larger radius for smoother look
+  const radius = 28; // larger radius for smoother look
   const stroke = 6;
   const circumference = 2 * Math.PI * radius;
 
   return (
-    <div className="fixed bottom-3 right-3">
+    <div className="top-3 right-13 fixed z-150">
       <motion.div
-        className="relative w-20 h-20"
+        className="relative w-16 h-16 "
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
         <svg className="w-full h-full rotate-[-90deg]">
-          {/* background track */}
           <circle
             cx="50%"
             cy="50%"
             r={radius}
-            stroke="currentColor"
-            className="text-gray-300 dark:text-gray-700"
+            stroke="#d1d5db"
             strokeWidth={stroke}
             fill="none"
           />
@@ -50,11 +48,11 @@ export default function PicksIndicator({
         </svg>
 
         {/* center label */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <span className="text-lg font-bold text-gray-800 dark:text-gray-100">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center bg-background rounded-full -z-10 ">
+          <span className="text-lg font-bold text-foreground">
             {numPicks}
           </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400 -mt-2">
+          <span className="text-xs text-muted-foreground -mt-2">
             picks
           </span>
         </div>

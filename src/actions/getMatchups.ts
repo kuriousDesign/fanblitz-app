@@ -38,6 +38,15 @@ export const getMatchupsByGameWeek = async (gameWeekId: string): Promise<Matchup
   return matchups;
 };
 
+export const getMatchupsByWeek = async (week: number): Promise<MatchupClientType[]> => {
+  const gameWeek = await getGameWeekByWeek(week);
+  if (!gameWeek) {
+    console.warn(`No game week found for week ${week}`);
+    return [];
+  }
+  return getMatchupsByGameWeek(gameWeek._id as string);
+};
+
 export const getSpreadPickByPlayerAndGameWeek = async (playerId: string, gameWeekId: string): Promise<SpreadPickClientType | null> => {
   const filter = { 
     player_id: new Types.ObjectId(playerId),

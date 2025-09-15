@@ -10,6 +10,7 @@ import { MatchupSpreadPredictionClientType } from "@/models/SpreadPick";
 interface FootballPickerProps {
   matchup: MatchupClientType;
   predictions: MatchupSpreadPredictionClientType[];
+  disableSelect: boolean;
   setPredictions: React.Dispatch<
     React.SetStateAction<MatchupSpreadPredictionClientType[]>
   >;
@@ -18,11 +19,13 @@ interface FootballPickerProps {
 export default function FootballSpreadPickerComponent({
   matchup,
   predictions,
+  disableSelect,
   setPredictions,
 }: FootballPickerProps) {
   const { home_team: homeTeam, away_team: awayTeam } = matchup;
   const [selected, setSelected] = useState<"home" | "away" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const isDisabled = disableSelect && !selected;
 
   // 🔑 Sync local state with predictions from parent
   useEffect(() => {
@@ -90,63 +93,66 @@ export default function FootballSpreadPickerComponent({
     setSelected(null);
   };
 
+  // create a team div so that i don't have to define home and away twice
+  const TeamDiv = ({ team, isSelected }: { team: "home" | "away"; isSelected: boolean }) => (
+    <div
+      className={`flex-1 text-center text-md font-semibold h-20 ${isSelected
+        ? "text-primary-foreground bg-primary rounded-md"
+        : selected !== null
+          ? "text-muted-foreground bg-none"
+          : "text-accent-foreground bg-none"
+        }`}
+    >
+      {team === "home" ? homeTeam : awayTeam}
+      <div className={`text-sm font-normal ${isSelected
+        ? "text-primary-foreground"
+        : selected !== null
+          ? "text-muted-foreground"
+          : "text-foreground"
+        }`}>
+        {matchup.spread_favorite_team === (team === "home" ? 'home_team' : 'away_team') ? `(-${matchup.spread})` : `(+${matchup.spread})`}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex flex-col items-center w-full">
-      <div className="flex w-full justify-center gap-8 items-center relative">
-        {/* Away Team */}
-        <div
-          className={`flex-1 text-center text-md font-semibold h-20 ${selected === "away"
-              ? "text-yellow-500 bg-black"
-              : "text-gray-800 bg-black/0"
-            }`}
-        >
-          {awayTeam}
-          <div className="text-sm font-normal text-gray-500">
-            {matchup.spread_favorite_team === 'away_team' ? `(-${matchup.spread})` : `(+${matchup.spread})`}
-          </div>
-        </div>
+    <div className="w-full max-w-md p-4 bg-secondary rounded-lg shadow-md">
+      <div className="flex flex-col items-center w-full">
+        <div className="flex w-full justify-center gap-8 items-center relative">
+          <TeamDiv team="away" isSelected={selected === "away"} />
 
-        {/* Football + Circle + Cancel */}
-        <div className="relative flex items-center justify-center">
-          <motion.div
-            className={`absolute w-16 h-16 rounded-full ${selected ? "bg-gray-300/20" : "bg-gray-200"
-              }`}
-          />
-          {selected && !isDragging && (
-            <button
-              onClick={resetPick}
-              className="absolute z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors"
+          {/* Football + Circle + Cancel */}
+          <div className={`relative flex items-center justify-center ${isDisabled ? "pointer-events-none opacity-50" : ""}`}>
+            <motion.div
+              className={`absolute w-16 h-16 rounded-full ${selected ? "bg-gray-300/20" : "bg-gray-200"
+                }`}
+            />
+            {selected && !isDragging && (
+              <button
+                onClick={resetPick}
+                className="absolute z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-700" />
+              </button>
+            )}
+            <motion.div
+              className={`w-16 h-16 rounded-full flex items-center justify-center cursor-grab relative z-10 ${selected ? "bg-green-500/20 animate-pulse" : "bg-brown-600 shadow-lg"
+                }`}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={handleDragEnd}
+              animate={{
+                x: selected === "home" ? 140 : selected === "away" ? -140 : 0,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              <X className="w-6 h-6 text-gray-700" />
-            </button>
-          )}
-          <motion.div
-            className={`w-16 h-16 rounded-full flex items-center justify-center cursor-grab relative z-10 ${selected ? "bg-green-500/20 animate-pulse" : "bg-brown-600 shadow-lg"
-              }`}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={handleDragEnd}
-            animate={{
-              x: selected === "home" ? 140 : selected === "away" ? -140 : 0,
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          >
-            <span className="text-2xl">🏈</span>
-          </motion.div>
-        </div>
-
-        {/* Home Team */}
-        <div
-          className={`flex-1 text-center text-md font-semibold h-20 ${selected === "home"
-              ? "text-pink-500 bg-black"
-              : "text-gray-800 bg-black/0"
-            }`}
-        >
-          {homeTeam}
-          <div className="text-sm font-normal text-gray-500">
-            {matchup.spread_favorite_team === 'home_team' ? `(-${matchup.spread})` : `(+${matchup.spread})`}
+              <span className="text-2xl">🏈</span>
+            </motion.div>
           </div>
+
+          {/* Home Team */}
+          <TeamDiv team="home" isSelected={selected === "home"} />
         </div>
       </div>
     </div>

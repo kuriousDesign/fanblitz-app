@@ -24,6 +24,41 @@ export enum Sports {
     NFL = "americanfootball_nfl",
     NCAA_FOOTBALL = "americanfootball_ncaaf",
 }
+    // Example response from OddsApi for a game score
+    // {
+    //     "id": "572d984e132eddaac3da93e5db332e7e",
+    //     "sport_key": "basketball_nba",
+    //     "sport_title": "NBA",
+    //     "commence_time": "2022-02-06T03:10:38Z",
+    //     "completed": true,
+    //     "home_team": "Sacramento Kings",
+    //     "away_team": "Oklahoma City Thunder",
+    //     "scores": [
+    //         {
+    //             "name": "Sacramento Kings",
+    //             "score": "113"
+    //         },
+    //         {
+    //             "name": "Oklahoma City Thunder",
+    //             "score": "103"
+    //         }
+    //     ],
+    //     "last_update": "2022-02-06T05:18:19Z"
+    // },
+export interface OddsApiGameScore {
+    id: string;
+    sport_key: string;
+    sport_title: string;
+    commence_time: string;
+    completed: boolean;
+    home_team: string;
+    away_team: string;
+    scores: {
+        name: string;
+        score: string; // score is a string in the API response
+    }[];
+    last_update: string;
+}
 
 export interface GameWithBookmakerSpread {
     id: string;

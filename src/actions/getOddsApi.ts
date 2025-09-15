@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import axios from "axios";
-import { GameWithBookmakerSpread, Sports, convertGameWithBookmakerSpreadToMatchupClientType } from "@/types/football";
+import { GameWithBookmakerSpread, OddsApiGameScore, Sports, convertGameWithBookmakerSpreadToMatchupClientType } from "@/types/football";
 import { getGameWeek, getMatchupsByGameWeek } from "./getMatchups";
-import { postMatchups } from "./postMatchup";
+import { postMatchup, postMatchups } from "./postMatchup";
 import { MatchupClientType } from "@/models/Matchup";
 
 const API_KEY = process.env.ODDS_API_KEY; // Store your API key in .env.local
@@ -15,7 +15,6 @@ const API_KEY = process.env.ODDS_API_KEY; // Store your API key in .env.local
 export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Promise<GameWithBookmakerSpread[]> {
 
   //const nflUrl = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=YOUR_API_KEY&regions=us&markets=spreads&oddsFormat=american";
-
   const sport = Sports.NCAA_FOOTBALL;
   //const nflSport = "americanfootball_nfl"; // NFL sport key
 
@@ -28,14 +27,12 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
   const week1EndMonth = 9; // September (use 09 to ensure proper formatting)
 
   // Format dates to match API expected format: 2023-09-10T23:59:59Z
-
   const week1StartFormatted = `${season}-${week1StartMonth.toString().padStart(2, '0')}-${week1StartDay.toString().padStart(2, '0')}`;
   const week1EndFormatted = `${season}-${week1EndMonth.toString().padStart(2, '0')}-${week1EndDay.toString().padStart(2, '0')}`;
 
   const week1CommenceStart = `${week1StartFormatted}T00:00:00Z`;
   const week1CommenceEnd = `${week1EndFormatted}T23:59:59Z`;
   //results: 2024-09-07T00:00:00.000Z
-
 
   const diffWeeks = week - 1;
   let commenceTimeFrom = new Date(new Date(week1CommenceStart).getTime() + diffWeeks * 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -69,10 +66,6 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
       }
     );
 
-    // give me the full query string on console
-    //console.log("Odds API request URL:", oddsRes.request.res.responseUrl);
-    //console.log(oddsRes.data[0]);
-
     const filtered: GameWithBookmakerSpread[] = oddsRes.data.map((game: any) => {
       let bookmaker = null;
       for (const bKey of queriedBookmakers) {
@@ -84,7 +77,7 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
         console.warn(`No queried bookmaker found for game ${game.id} between ${game.home_team} and ${game.away_team} at ${game.commence_time}`);
         return null; // skip this game if no bookmaker found
       }
-      
+
       const gameWithBookmakerSpread: GameWithBookmakerSpread = {
         id: game.id,
         commence_time: game.commence_time,
@@ -96,22 +89,8 @@ export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Prom
       };
       return gameWithBookmakerSpread;
     });
-    // console.log("first filtered game");
-    // console.log(filtered[0]);
-    // console.log('first filtered game bookmaker markets spread outcomes:');
-    // console.log(filtered[0]?.bookmaker.markets.find(m => m.key === "spreads")?.outcomes);
-    // filter out nulls
+
     const nonNullFiltered = filtered.filter((game): game is GameWithBookmakerSpread => game !== null);
-    //console.log("total non-null games found: ", nonNullFiltered.length);
-    //console.log("total games found: ", filtered.length);
-
-    // convert filtered to simplified games
-    // const simplified = nonNullFiltered.map((game: any) => {
-    //   return convertGameToSimplified(game as GameWithBookmakerSpread);
-    // });
-
-    //console.log("first simplified game");
-    //console.log(simplified[0]);
     if (nonNullFiltered.length === 0) {
       console.warn(`No NCAA games with spreads found for week ${week} from ${commenceTimeFrom} to ${commenceTimeTo}`);
     }
@@ -141,4 +120,102 @@ export async function updateSpreadDataNcaaFootballGameWeekMatchups(gameWeekId: s
   //console.log('First converted matchup:');
   //console.log(matchups[0]);
   return fetchedMatchups;
+}
+
+
+
+
+
+// 🔥 New function: NCAA odds prioritized for FanDuel
+export async function updateOddsApiNcaaMatchupsScoresByGameWeek(gameWeekId: string): Promise<boolean> {
+
+  //const nflUrl = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=YOUR_API_KEY&regions=us&markets=spreads&oddsFormat=american";
+  const sport = Sports.NCAA_FOOTBALL;
+  //const nflSport = "americanfootball_nfl"; // NFL sport key
+  const gameWeek = await getGameWeek(gameWeekId);
+  if (!gameWeek || !gameWeek.week) {
+    throw new Error(`Game week not found for id ${gameWeekId}`);
+  }
+
+  const matchups = await getMatchupsByGameWeek(gameWeekId);
+  if (!matchups || matchups.length === 0) {
+    console.warn(`No matchups found for game week ${gameWeekId}`);
+    return false;
+  }
+
+  const apiGameIdsFromMatchups = matchups.map(matchup => matchup.api_game_id);
+
+  console.log(`Fetching NCAA week ${gameWeek.week} scores for ${apiGameIdsFromMatchups.length} matchups`);
+
+  // GET /v4/sports/{sport}/scores/?apiKey={apiKey}&daysFrom={daysFrom}&dateFormat={dateFormat}
+
+  // #Parameters
+  // sport   The sport key obtained from calling the /sports endpoint.
+  // apiKey   The API key associated with your subscription. See usage plans
+  // daysFrom   Optional - The number of days in the past from which to return completed games. Valid values are integers from 1 to 3. If this parameter is missing, only live and upcoming games are returned.
+  // dateFormat   Optional - Determines the format of timestamps in the response. Valid values are unix and iso (ISO 8601). Defaults to iso.
+  // eventIds   Optional - Comma-separated game ids. Filters the response to only return games for the specified game ids.
+  // #Schema
+  try {
+    const oddsRes = await axios.get(
+      `https://api.the-odds-api.com/v4/sports/${sport}/scores`,
+      {
+        params: {
+          apiKey: API_KEY,
+          eventIds: apiGameIdsFromMatchups.join(","),
+        }
+      }
+    );
+
+    console.log(`Fetched ${oddsRes.data.length} NCAA games with scores for week ${gameWeek.week}, expected ${apiGameIdsFromMatchups.length}`);
+    const updatePromises: Promise<unknown>[] = [];
+    oddsRes.data.map((matchupScore: OddsApiGameScore) => {
+      console.log(matchupScore);
+      // find corresponding matchup with same id
+      const correspondingMatchup = matchups.find(m => m.api_game_id === matchupScore.id);
+      // create list of promises
+      
+      if (correspondingMatchup) {
+        // update scores in the corresponding matchup
+        // extract home score from matchupScore
+        if (!matchupScore.scores || matchupScore.scores.length === 0) {
+          console.warn(`No scores found for game ${matchupScore.id} between ${matchupScore.home_team} and ${matchupScore.away_team}`);
+          correspondingMatchup.home_team_score = -1;
+          correspondingMatchup.away_team_score = -1;
+          correspondingMatchup.winner = 'waiting for game to start';
+          correspondingMatchup.status = 'scheduled';
+
+        } else {
+          const homeScoreObj = matchupScore.scores.find(s => s.name === matchupScore.home_team);
+          const homeScore = homeScoreObj ? parseInt(homeScoreObj.score) : 0;
+          const awayScoreObj = matchupScore.scores.find(s => s.name === matchupScore.away_team);
+          const awayScore = awayScoreObj ? parseInt(awayScoreObj.score) : 0;
+
+          correspondingMatchup.home_team_score = homeScore;
+          correspondingMatchup.away_team_score = awayScore;
+          correspondingMatchup.status = matchupScore.completed ? 'finished' : 'in_progress';
+          if (matchupScore.completed) {
+            if (homeScore - Math.abs(correspondingMatchup.spread) > awayScore) {
+              correspondingMatchup.winner = 'home_team';
+            } else if (awayScore - Math.abs(correspondingMatchup.spread) > homeScore) {
+              correspondingMatchup.winner = 'away_team';
+            } else {
+              correspondingMatchup.winner = 'push';
+            }
+          }
+        }
+        // create promise to to update the matchup
+        updatePromises.push(postMatchup(correspondingMatchup));
+      }
+    });
+    if (updatePromises.length === 0) {
+      console.warn(`No matchups to update for game week ${gameWeek.week}`);
+      return false;
+    }
+    await Promise.all(updatePromises);
+    return true;
+  } catch (error: unknown) {
+    console.error("Error updating matchups with scores:", error);
+    return false;
+  }
 }

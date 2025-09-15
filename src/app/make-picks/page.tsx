@@ -18,6 +18,7 @@ import { postSpreadPick } from "@/actions/postPick";
 
 import { Button } from "@/components/ui";
 import PicksIndicator from "./PicksIndicator";
+import { updateOddsApiNcaaMatchupsScoresByGameWeek } from "@/actions/getOddsApi";
 
 
 export default function MakePicksPage() {
@@ -98,10 +99,15 @@ export default function MakePicksPage() {
         spreadPickRef.current.status = 'picking';
       }
 
-
-
-      if (spreadPickRef.current.status === 'picking') {
-        spreadPickRef.current.matchup_spread_predictions = predictions;
+      if( spreadPickRef.current.status === 'picking' && predictions.length >= (gameWeek?.num_selections || 0)) {
+        spreadPickRef.current.status = 'picking_complete';
+                spreadPickRef.current.matchup_spread_predictions = predictions;
+        //console.log("Posting picks to server:", predictions[predictions.length - 1]);
+        console.log(`Number of games selected: ${predictions.length}`);
+        await postSpreadPick(spreadPickRef.current);
+      } else if (spreadPickRef.current.status === 'picking_complete' && predictions.length < (gameWeek?.num_selections || 0)) {
+        spreadPickRef.current.status = 'picking';
+                spreadPickRef.current.matchup_spread_predictions = predictions;
         //console.log("Posting picks to server:", predictions[predictions.length - 1]);
         console.log(`Number of games selected: ${predictions.length}`);
         await postSpreadPick(spreadPickRef.current);
@@ -113,27 +119,26 @@ export default function MakePicksPage() {
     setNumGamesSelected(predictions.length);
 
 
-  }, [predictions]);
+  }, [predictions, gameWeek]);
 
   if (isLoading) {
-    return <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 w-screen gap-1">
-      <p className="text-gray-600">Loading...</p>
+    return <div className="min-h-screen flex flex-col items-center justify-center bg-background w-screen gap-1">
+      <p className="text-muted-foreground">Loading...</p>
     </div>;
   }
 
   if (!gameWeek) {
-    return <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 w-screen gap-1">
-      <p className="text-gray-600">No open gameWeeks found, tell admin to open up the current week.</p>
+    return <div className="min-h-screen flex flex-col items-center justify-center bg-background w-screen gap-1">
+      <p className="text-foreground">No open gameWeeks found, tell admin to open up the current week.</p>
     </div>;
   }
 
   // if no gameWeek or player
   if (!gameWeek || !player) {
-    return <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 w-screen gap-1">
-      <p className="text-gray-600">Game week or player not found.</p>
+    return <div className="min-h-screen flex flex-col items-center justify-center bg-background w-screen gap-1">
+      <p className="text-foreground">Game week or player not found.</p>
     </div>;
   }
-
   const updateMatchups = async () => {
 
     if (!gameWeek || !gameWeek._id) {
@@ -143,23 +148,34 @@ export default function MakePicksPage() {
     await updateSpreadDataNcaaFootballGameWeekMatchups(gameWeek._id as string);
   };
 
+  const updateScores = async () => {
+
+    if (!gameWeek || !gameWeek._id) {
+      console.error("No active game week found");
+      return;
+    }
+    await updateOddsApiNcaaMatchupsScoresByGameWeek(gameWeek._id as string);
+  };
+
   // create a function that will reset all prediction
-  const resetPredictions = () => {
+  const resetPredictions = async () => {
+
+
+
     setPredictions([]);
     if (spreadPickRef.current) {
       spreadPickRef.current.matchup_spread_predictions = [];
+      await postSpreadPick(spreadPickRef.current);
     }
   };
 
   if ((!matchups || matchups.length === 0)) {
-
-    return <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 w-screen gap-1">
-
-      <p className="text-gray-600">No matchups available for week {gameWeek.week}, update and then refresh page.</p>
-      {isAdmin && <ServerActionButton label="Update Available Matchups" serverAction={updateMatchups} />}
-
-
-    </div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background w-screen gap-1">
+        <p className="text-foreground">No matchups available for week {gameWeek.week}, update and then refresh page.</p>
+        {isAdmin && <ServerActionButton label="Update Available Matchups" serverAction={updateMatchups} />}
+      </div>
+    );
   }
 
   return (
@@ -176,18 +192,6 @@ export default function MakePicksPage() {
           Swipe the football left or right to make your selection, and tap cancel button to remove your pick.
         </PageHeaderDescription>
         <PageActions>
-          {/* {isAdmin &&
-            <LinkButton
-              href={getLinks().getSeasonsUrl()}>
-              Seasons
-            </LinkButton>
-          }
-          {isAdmin &&
-            <LinkButton
-              href={getLinks().getGameWeeksUrl()}>
-              Game Weeks
-            </LinkButton>
-          } */}
           <Button
             variant="outline"
             onClick={resetPredictions}
@@ -197,9 +201,13 @@ export default function MakePicksPage() {
             Reset Picks
           </Button>
           {isAdmin && <ServerActionButton label="Update Available Matchups" serverAction={updateMatchups} />}
+          {isAdmin && <ServerActionButton label="Update Scores" serverAction={updateScores} />}
         </PageActions>
-        <div className="mt-2 text-sm text-gray-600">
+        <div className={`mt-2 text-sm ${numGamesSelected >= gameWeek.num_selections ? 'text-green-600' : 'text-muted-foreground'}`}>
           {numGamesSelected} of {gameWeek.num_selections} games selected
+          {numGamesSelected < gameWeek.num_selections && (
+            <span className="block text-accent-foreground animate-pulse">Pick more games</span>
+          )}
         </div>
       </PageHeader>
       <div className="flex flex-1 flex-col pb-6">
@@ -207,9 +215,9 @@ export default function MakePicksPage() {
 
           <Suspense fallback={<TabCardSkeleton />}>
             {matchups && matchups.length > 0 && matchups.map((matchup, index) => (
-              <div key={index} className="w-full max-w-md p-4 bg-white rounded-lg shadow-md">
-                <FootballSpreadPickerComponent matchup={matchup} predictions={predictions} setPredictions={setPredictions} />
-              </div>
+             
+                <FootballSpreadPickerComponent key={index} matchup={matchup} predictions={predictions} setPredictions={setPredictions} disableSelect={numGamesSelected >= gameWeek.num_selections} />
+       
             ))}
 
             <PicksIndicator numPicks={numGamesSelected} numSelections={gameWeek.num_selections} />

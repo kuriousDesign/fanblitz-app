@@ -16,25 +16,25 @@ export const siteConfig = {
       href: getLinks().getMakePicksUrl(),
       label: "Make Picks",
     },
-    {
-      href: "https://kurious-design.com",
-      label: "Kurious",
-    },
+    // {
+    //   href: "https://kurious-design.com",
+    //   label: "Kurious",
+    // },
 
   ],
   adminNavItems: [
-    { 
-      href: getLinks().getSeasonsUrl(), 
-      label: 'Seasons' 
-    },
-    { 
-      href: getLinks().getCreateEventUrl(), 
-      label: 'Create Event' 
-    },
-    {
-      href: getLinks().getGameWeeksUrl(),
-      label: "Weeks",
-    },
+    // { 
+    //   href: getLinks().getSeasonsUrl(), 
+    //   label: 'Seasons' 
+    // },
+    // { 
+    //   href: getLinks().getCreateEventUrl(), 
+    //   label: 'Create Event' 
+    // },
+    // {
+    //   href: getLinks().getGameWeeksUrl(),
+    //   label: "Weeks",
+    // },
     { href: getLinks().getPlayersUrl(), label: 'Players' },
     //{ href: getLinks().getDriversUrl(), label: 'Drivers' },
   ]
