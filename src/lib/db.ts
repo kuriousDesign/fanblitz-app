@@ -10,7 +10,7 @@ declare global {
 }
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
-const DB_NAME = process.env.DB_NAME || "games_2025";
+const DB_NAME = process.env.DB_NAME || "fanblitz";
 
 if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
