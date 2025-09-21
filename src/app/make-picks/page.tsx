@@ -97,17 +97,22 @@ export default function MakePicksPage() {
       }
       if (predictions.length > 0 && spreadPickRef.current.status === 'initialized') {
         spreadPickRef.current.status = 'picking';
+        console.log("Status changed from initialized to picking");
       }
-
+      // if you reached the number of selections, then change status to complete
       if( spreadPickRef.current.status === 'picking' && predictions.length >= (gameWeek?.num_selections || 0)) {
         spreadPickRef.current.status = 'picking_complete';
-                spreadPickRef.current.matchup_spread_predictions = predictions;
-        //console.log("Posting picks to server:", predictions[predictions.length - 1]);
+        spreadPickRef.current.matchup_spread_predictions = predictions;
         console.log(`Number of games selected: ${predictions.length}`);
         await postSpreadPick(spreadPickRef.current);
       } else if (spreadPickRef.current.status === 'picking_complete' && predictions.length < (gameWeek?.num_selections || 0)) {
         spreadPickRef.current.status = 'picking';
-                spreadPickRef.current.matchup_spread_predictions = predictions;
+        spreadPickRef.current.matchup_spread_predictions = predictions;
+        //console.log("Posting picks to server:", predictions[predictions.length - 1]);
+        console.log(`Number of games selected: ${predictions.length}`);
+        await postSpreadPick(spreadPickRef.current);
+      } else {
+        spreadPickRef.current.matchup_spread_predictions = predictions; 
         //console.log("Posting picks to server:", predictions[predictions.length - 1]);
         console.log(`Number of games selected: ${predictions.length}`);
         await postSpreadPick(spreadPickRef.current);
@@ -159,9 +164,6 @@ export default function MakePicksPage() {
 
   // create a function that will reset all prediction
   const resetPredictions = async () => {
-
-
-
     setPredictions([]);
     if (spreadPickRef.current) {
       spreadPickRef.current.matchup_spread_predictions = [];

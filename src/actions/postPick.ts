@@ -21,6 +21,9 @@ export const postSpreadPick = async (pick: Partial<SpreadPickDoc | SpreadPickCli
   //if existing Doc, then don't create a new one, just update it
   if (existingDoc) {
     clientPick._id = existingDoc._id.toString();
+    console.log('updating existing pick with id', clientPick._id);
+  } else {
+    console.log('creating new pick for game week', clientPick.game_week_id);
   }
 
   await postSpreadPickSimple(clientPick as SpreadPickClientType);

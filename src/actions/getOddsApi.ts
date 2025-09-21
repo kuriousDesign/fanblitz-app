@@ -163,14 +163,21 @@ export async function updateOddsApiNcaaMatchupsScoresByGameWeek(gameWeekId: stri
         params: {
           apiKey: API_KEY,
           eventIds: apiGameIdsFromMatchups.join(","),
+          daysFrom: 3,
+          dateFormat: "iso"
         }
       }
     );
+    if (!oddsRes.data || oddsRes.data.length === 0 || oddsRes.data.length !== apiGameIdsFromMatchups.length) {
+      console.error(`Fetched ${oddsRes.data.length} NCAA games with scores for week ${gameWeek.week}, expected ${apiGameIdsFromMatchups.length}`);
+      //console.log(oddsRes.data);
+      return false;
+    }
 
     console.log(`Fetched ${oddsRes.data.length} NCAA games with scores for week ${gameWeek.week}, expected ${apiGameIdsFromMatchups.length}`);
     const updatePromises: Promise<unknown>[] = [];
     oddsRes.data.map((matchupScore: OddsApiGameScore) => {
-      console.log(matchupScore);
+      //console.log(matchupScore);
       // find corresponding matchup with same id
       const correspondingMatchup = matchups.find(m => m.api_game_id === matchupScore.id);
       // create list of promises
@@ -191,16 +198,30 @@ export async function updateOddsApiNcaaMatchupsScoresByGameWeek(gameWeekId: stri
           const awayScoreObj = matchupScore.scores.find(s => s.name === matchupScore.away_team);
           const awayScore = awayScoreObj ? parseInt(awayScoreObj.score) : 0;
 
+          const favoriteTeamScore = correspondingMatchup.spread_favorite_team === 'home_team' ? homeScore : awayScore;
+          const underdogTeamScore = correspondingMatchup.spread_favorite_team === 'home_team' ? awayScore : homeScore;
+          const actualSpread = favoriteTeamScore - underdogTeamScore;
+          const favoriteTeamCoveredTheSpread = actualSpread > Math.abs(correspondingMatchup.spread);
+          const wasPush = actualSpread === Math.abs(correspondingMatchup.spread);
+          const underdogTeam = correspondingMatchup.spread_favorite_team === 'home_team' ? 'away_team' : 'home_team';
+
           correspondingMatchup.home_team_score = homeScore;
           correspondingMatchup.away_team_score = awayScore;
           correspondingMatchup.status = matchupScore.completed ? 'finished' : 'in_progress';
+          // give me console log of favored team and underdog team scores and spread
+          console.log(`favored team: ${favoriteTeamScore}, underdog team: ${underdogTeamScore}, spread: ${correspondingMatchup.spread}`);
+
+          //console.log(`Game ${matchupScore.id} between ${matchupScore.home_team} and ${matchupScore.away_team} is ${correspondingMatchup.status} with score home: ${homeScore} - away: ${awayScore}`);
           if (matchupScore.completed) {
-            if (homeScore - Math.abs(correspondingMatchup.spread) > awayScore) {
-              correspondingMatchup.winner = 'home_team';
-            } else if (awayScore - Math.abs(correspondingMatchup.spread) > homeScore) {
-              correspondingMatchup.winner = 'away_team';
-            } else {
+            if (wasPush) {
               correspondingMatchup.winner = 'push';
+              console.log(`game was a push against the spread - homeScore: ${homeScore}, awayScore: ${awayScore}, spread: ${correspondingMatchup.spread}, favorite: ${correspondingMatchup.spread_favorite_team}`);
+            } else if (favoriteTeamCoveredTheSpread) {
+              correspondingMatchup.winner = correspondingMatchup.spread_favorite_team;
+              console.log(`favored team covered the spread - favoredteam: ${favoriteTeamScore}, spread: ${correspondingMatchup.spread}, favorite: ${correspondingMatchup.spread_favorite_team}`);
+            } else {
+              correspondingMatchup.winner = underdogTeam;
+              console.log(`underdog team covered the spread - underdogteam: ${underdogTeamScore}, spread: ${correspondingMatchup.spread}, favorite: ${correspondingMatchup.spread_favorite_team}`);
             }
           }
         }
