@@ -13,23 +13,37 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { ChevronDownIcon } from 'lucide-react';
+import { MatchupClientType } from '@/models/Matchup';
 
 interface PopoverPickDetailsProps {
     spreadPick: SpreadPickClientType;
+    matchups: MatchupClientType[];
 }
 
 export function PopoverSpreadPickDetails({
     spreadPick,
+    matchups,
 }: PopoverPickDetailsProps) {
 
 
     // need to create table headers dependent on game type
     const tableHeads = [
 
-        // { label: "Winner", className: "text-left" },
+        { label: "Pick", className: "text-left" },
         { label: "Predicted", className: "text-center font-bold" },
         { label: "Points", className: "text-center" }
     ];
+
+
+    const selectionDisplayNames: { [key: string]: string } = {};
+    spreadPick.matchup_spread_predictions.forEach((prediction, index) => {
+        const matchup = matchups.find((m: MatchupClientType) => m._id === prediction.matchup_id);
+        if (matchup) {
+            selectionDisplayNames[index] = prediction.selection === "home" ? matchup.home_team : matchup.away_team;
+        }
+    });
+
+
 
     return (
         <Popover>
@@ -62,9 +76,10 @@ export function PopoverSpreadPickDetails({
                                 </TableHeader>
                                 <TableBody>
                                     {spreadPick.matchup_spread_predictions.map((prediction: MatchupSpreadPredictionClientType, index: number) => (
+
                                         <TableRow key={index}>
-                                            {/* <TableCell className="text-center">{numberToOrdinal(matchup.winner)}</TableCell> */}
-                                            <TableCell className="text-center text-primary font-bold">{prediction.selection}</TableCell>
+                                            <TableCell className="text-center">{index + 1}</TableCell>
+                                            <TableCell className="text-center text-primary font-bold">{selectionDisplayNames[index]}</TableCell>
                                             <TableCell className="text-center">{prediction.score}</TableCell>
                                         </TableRow>
                                     ))}
