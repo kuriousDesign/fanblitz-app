@@ -1,0 +1,170 @@
+export const experimental_ppr = true;
+
+import { Suspense } from 'react';
+
+import { getCurrentPlayer } from '@/actions/getActions';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+
+import {
+    PageActions,
+    PageHeader,
+    PageHeaderDescription,
+    PageHeaderHeading,
+} from "@/components/page-header"
+import { LinkButton } from "@/components/LinkButton"
+import { getLinks } from "@/lib/link-urls"
+import ButtonUpdateGameWeekLeaderboard from '@/components/buttons/button-update-gameWeek-leaderboard';
+import { getIsAdmin } from '@/actions/userActions';
+
+import TabCard, { FilterOption } from '@/components/cards/tab-card';
+import PeekDiv from '@/components/cards/pick-div';
+import { GameStates, gameStatesToString } from '@/types/enums';
+
+import CardWinningPick from '@/components/card-winning-pick';
+import { getGameWeek, getSpreadPicks } from '@/actions/getMatchups';
+import { SpreadPickClientType } from '@/models/SpreadPick';
+import TableSpreadPickLeaderboard, { PickLeaderboardSkeleton } from '@/components/tables/spreadpick-leaderboard';
+
+export default async function GameWeekPage({ params }: { params: Promise<{ gameWeekId: string }> }) {
+    const playerPromise = getCurrentPlayer();
+    const isAdminPromise = getIsAdmin();
+    const { gameWeekId } = await params;
+    //updateSpreadPicksScoresByGameWeek(gameWeekId);
+
+    const filter = { game_week_id: gameWeekId };
+    const picksPromise = getSpreadPicks(filter);
+    //const hardChargerTablePromise = getHardChargerTable(gameId);
+
+    const gameWeek = await getGameWeek(gameWeekId);
+    if (!gameWeek) {
+        return <div>Game Week not found</div>;
+    }
+
+    const [player, isAdmin, picks] = await Promise.all([
+        playerPromise,
+        isAdminPromise,
+        //hardChargerTablePromise,
+        picksPromise,
+    ]);
+
+    let winningPicks: SpreadPickClientType[] = [];
+
+    // Define filterable options
+    const filterableOptionsPicks = [
+        { key: "player_id", value: null, tabLabel: 'All' }, // "All" tab
+        { key: "player_id", value: player?._id, tabLabel: 'Yours' }, // "My Picks" tab
+    ] as FilterOption[];
+
+    const title = gameWeek.name
+    // put game week week number as desc
+    const description = `Week ${gameWeek.week}`
+
+    // i need a switch case statement to handle showing the picks leaderboard vs picks card, based on game.status
+    let showLeaderboard = false;
+    let showMakePicksBtn = false;
+    switch (gameWeek.status) {
+        case GameStates.OPEN:
+            showLeaderboard = false;
+            showMakePicksBtn = true;
+            break;
+        case GameStates.IN_PLAY:
+            showLeaderboard = true;
+            showMakePicksBtn = true;
+            break;
+        case GameStates.FINISHED:
+            showLeaderboard = true;
+            //find winning picks, looking for ties amongs the sorted picks
+            winningPicks.push(picks[0]); // first pick is the winner
+            for (let i = 1; i < picks.length; i++) {
+                if (picks[i].score_total === picks[0].score_total) {
+                    winningPicks.push(picks[i]); // add to winning picks if score is the same
+                }
+                else if (picks[i].score_total > picks[0].score_total) {
+                    // trigger toast error if somehow the picks are out of order
+                    console.error('Picks are not sorted by score_total in descending order');
+                    winningPicks = []; // reset winning picks if scores are not in order
+                    break; // stop if the score is different
+                }
+            }
+
+            break;
+        default:
+            showLeaderboard = false;
+            console.warn(`Unexpected game status: ${gameWeek.status}`);
+            break;
+    }
+
+    return (
+        <div>
+            <PageHeader >
+                <PageHeaderHeading >
+                    {title}
+                </PageHeaderHeading>
+                <PageHeaderDescription>{description}</PageHeaderDescription>
+                {gameWeek.num_selections > 0 &&
+                    <p className="text-med font-light text-accent-foreground">
+                        Choose {gameWeek.num_selections} Predictions
+                    </p>
+                }
+                <br />
+                Game Status: {gameStatesToString(gameWeek.status as GameStates)}
+                <br />
+                <span className="text-med text-primary">Current Pot: ${gameWeek.purse_amount.toFixed(0)} </span>
+                {gameWeek.status === GameStates.FINISHED && winningPicks.length > 0 && winningPicks.map((pick, index) => (
+                    pick._id && <CardWinningPick key={index} pickId={pick._id} />
+                ))}
+                {/* <GameDetails game={gameWeek} races={races} /> */}
+                <PageActions>
+                    <div className="flex flex-wrap items-center gap-2">
+
+                        {/* {(true || gameWeek.status === GameStates.IN_PLAY) && isAdmin && <ButtonUpdateGame gameId={gameId} />} */}
+                        {/* {isAdmin && <BtnChangeGameState state={GameStates.OPEN} game={gameWeek as GameClientType} />} */}
+                        {/* {isAdmin && <BtnChangeGameState game={gameWeekId as GameClientType} />} */}
+                        {/* {isAdmin && <BtnChangeGameState game={gameWeekId as GameClientType} />} */}
+                        {isAdmin && <ButtonUpdateGameWeekLeaderboard gameWeekId={gameWeekId} />}
+    
+                        {showMakePicksBtn && 
+                            <LinkButton
+                                href={getLinks().getMakePicksUrl()}>
+                                Make Picks
+                            </LinkButton>
+                        }
+                    </div>
+                </PageActions>
+            </PageHeader>
+            <div className="flex flex-1 flex-col pb-6">
+                <div className="theme-container container flex flex-1 flex-col gap-10">
+
+
+                    {!showLeaderboard &&
+                        <TabCard
+                            cardTitle="Picks"
+                            cardDescription="These are the picks for this game."
+                            items={picks}
+                            filterableOptions={filterableOptionsPicks}
+                            ComponentDiv={PeekDiv}
+                        />
+                    }
+                    {showLeaderboard &&
+                        <Card>
+                            <CardHeader >
+                                Leaderboard
+                            </CardHeader>
+                            <CardDescription >
+                                See how each pick is doing in this game.
+                            </CardDescription>
+                            <CardContent>
+                                {picks &&
+                                    <Suspense fallback={<PickLeaderboardSkeleton />}>
+                                        <TableSpreadPickLeaderboard picks={picks} />
+                                    </Suspense>
+                                }
+                            </CardContent>
+                        </Card>
+                    }
+
+                </div>
+            </div>
+        </div>
+    );
+}

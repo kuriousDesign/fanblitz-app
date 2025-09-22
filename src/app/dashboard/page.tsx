@@ -18,6 +18,7 @@ import { getIsAdmin } from "@/actions/userActions";
 import { Suspense } from "react";
 import { postNewPlayerWithUser } from "@/actions/postActions";
 import { DefaultUser } from "@auth/core/types";
+import { getGameWeekByWeek } from "@/actions/getMatchups";
 
 
 //import ButtonUpdateAvailableWeekMatchups from "@/components/button-update-available-week-matchups";
@@ -48,10 +49,10 @@ export default async function DashboardPage() {
     }
     const isAdmin = await getIsAdmin();
 
-    // const gameWeek3 = await getGameWeekByWeek(3);
-    // if (!gameWeek3 || !gameWeek3._id) {
-    //     return <div>No game week found for week 3</div>;
-    // }
+    const gameWeek4 = await getGameWeekByWeek(4);
+    if (!gameWeek4 || !gameWeek4._id) {
+        return <div>No game week found for week 4</div>;
+    }
 
 
 
@@ -70,8 +71,12 @@ export default async function DashboardPage() {
                             Game Weeks
                         </LinkButton>
                     }
-                    {/* {isAdmin && <ButtonUpdateAvailableWeekMatchups week={3} />} */}
-                   
+     
+                        <LinkButton
+                            href={getLinks().getGameWeekUrl(gameWeek4._id)}>
+                            See Game Week 4
+                        </LinkButton>
+                    
 
                     <LinkButton
                         href={getLinks().getMakePicksUrl()}>
