@@ -10,6 +10,7 @@ import {
 import { Separator } from "../ui/separator";
 import { SpreadPickClientType } from "@/models/SpreadPick";
 import { PopoverSpreadPickDetails } from "../popover-spreadpick-details ";
+import { MatchupClientType } from "@/models/Matchup";
 
 
 export function convertIndexToLetter(index: number): string {
@@ -17,7 +18,7 @@ export function convertIndexToLetter(index: number): string {
     return letters[index % letters.length];
 }
 
-export default async function TableSpreadPickLeaderboard({ picks }: { picks: SpreadPickClientType[] }) {
+export default async function TableSpreadPickLeaderboard({ picks, matchups }: { picks: SpreadPickClientType[], matchups: MatchupClientType[] }) {
     if (!picks || picks.length === 0) {
         return <div className="text-center text-gray-500">No picks available.</div>;
     }
@@ -52,7 +53,7 @@ export default async function TableSpreadPickLeaderboard({ picks }: { picks: Spr
                 {picks.map((pick: SpreadPickClientType, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="text-center">
-                            <PopoverSpreadPickDetails spreadPick={pick} />
+                            <PopoverSpreadPickDetails spreadPick={pick} matchups={matchups} />
                         </TableCell>
                         <TableCell className="text-center">{pick.rank}</TableCell>
                         

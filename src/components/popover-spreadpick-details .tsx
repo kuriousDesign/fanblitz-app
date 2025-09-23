@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronDownIcon } from 'lucide-react';
 import { MatchupClientType } from '@/models/Matchup';
+import React from 'react';
 
 interface PopoverPickDetailsProps {
     spreadPick: SpreadPickClientType;
@@ -44,7 +45,6 @@ export function PopoverSpreadPickDetails({
     });
 
 
-
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -52,7 +52,7 @@ export function PopoverSpreadPickDetails({
                     <ChevronDownIcon className="h-4 w-4" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[100vw]">
+            <PopoverContent className="w-[100vw] overflow-y-scroll" side="bottom" align="end">
                 <div className="space-y-8">
 
                     <div className="bg-accent/10">

@@ -21,7 +21,7 @@ import PeekDiv from '@/components/cards/pick-div';
 import { GameStates, gameStatesToString } from '@/types/enums';
 
 import CardWinningPick from '@/components/card-winning-pick';
-import { getGameWeek, getSpreadPicks } from '@/actions/getMatchups';
+import { getGameWeek, getMatchupsByGameWeek, getSpreadPicks } from '@/actions/getMatchups';
 import { SpreadPickClientType } from '@/models/SpreadPick';
 import TableSpreadPickLeaderboard, { PickLeaderboardSkeleton } from '@/components/tables/spreadpick-leaderboard';
 
@@ -33,17 +33,17 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
 
     const filter = { game_week_id: gameWeekId };
     const picksPromise = getSpreadPicks(filter);
-    //const hardChargerTablePromise = getHardChargerTable(gameId);
+    const matchupsPromise = getMatchupsByGameWeek(gameWeekId);
 
     const gameWeek = await getGameWeek(gameWeekId);
     if (!gameWeek) {
         return <div>Game Week not found</div>;
     }
 
-    const [player, isAdmin, picks] = await Promise.all([
+    const [player, isAdmin, matchups, picks] = await Promise.all([
         playerPromise,
         isAdminPromise,
-        //hardChargerTablePromise,
+        matchupsPromise,
         picksPromise,
     ]);
 
@@ -156,7 +156,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                             <CardContent>
                                 {picks &&
                                     <Suspense fallback={<PickLeaderboardSkeleton />}>
-                                        <TableSpreadPickLeaderboard picks={picks} />
+                                        <TableSpreadPickLeaderboard picks={picks} matchups={matchups} />
                                     </Suspense>
                                 }
                             </CardContent>
