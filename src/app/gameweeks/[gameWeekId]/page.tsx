@@ -2,7 +2,7 @@ export const experimental_ppr = true;
 
 import { Suspense } from 'react';
 
-import { getCurrentPlayer } from '@/actions/getActions';
+//import { getCurrentPlayer } from '@/actions/getActions';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 import {
@@ -16,8 +16,8 @@ import { getLinks } from "@/lib/link-urls"
 import ButtonUpdateGameWeekLeaderboard from '@/components/buttons/button-update-gameWeek-leaderboard';
 import { getIsAdmin } from '@/actions/userActions';
 
-import TabCard, { FilterOption } from '@/components/cards/tab-card';
-import PeekDiv from '@/components/cards/pick-div';
+//import { FilterOption } from '@/components/cards/tab-card';
+//import PeekDiv from '@/components/cards/pick-div';
 import { GameStates, gameStatesToString } from '@/types/enums';
 
 //import CardWinningPick from '@/components/card-winning-pick';
@@ -28,7 +28,7 @@ import TableSpreadPickLeaderboard, { PickLeaderboardSkeleton } from '@/component
 // import Card from '@/components/ui/card';
 
 export default async function GameWeekPage({ params }: { params: Promise<{ gameWeekId: string }> }) {
-    const playerPromise = getCurrentPlayer();
+    //const playerPromise = getCurrentPlayer();
     const isAdminPromise = getIsAdmin();
     const { gameWeekId } = await params;
     //updateSpreadPicksScoresByGameWeek(gameWeekId);
@@ -42,8 +42,8 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
         return <div>Game Week not found</div>;
     }
 
-    const [player, isAdmin, matchups, picks] = await Promise.all([
-        playerPromise,
+    const [isAdmin, matchups, picks] = await Promise.all([
+        //playerPromise,
         isAdminPromise,
         matchupsPromise,
         picksPromise,
@@ -52,10 +52,10 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
     const winningPicks: SpreadPickClientType[] = [];
 
     // Define filterable options
-    const filterableOptionsPicks = [
-        { key: "player_id", value: null, tabLabel: 'All' }, // "All" tab
-        { key: "player_id", value: player?._id, tabLabel: 'Yours' }, // "My Picks" tab
-    ] as FilterOption[];
+    // const filterableOptionsPicks = [
+    //     { key: "player_id", value: null, tabLabel: 'All' }, // "All" tab
+    //     { key: "player_id", value: player?._id, tabLabel: 'Yours' }, // "My Picks" tab
+    // ] as FilterOption[];
 
     const title = gameWeek.name
     // put game week week number as desc
@@ -140,7 +140,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                 <div className="theme-container container flex flex-1 flex-col gap-10">
 
 
-                    {!showLeaderboard &&
+                    {/* {!showLeaderboard &&
                         <TabCard
                             cardTitle="Picks"
                             cardDescription="These are the picks for this game."
@@ -148,7 +148,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                             filterableOptions={filterableOptionsPicks}
                             ComponentDiv={PeekDiv}
                         />
-                    }
+                    } */}
                     {showLeaderboard &&
                         <Card>
                             <CardHeader >

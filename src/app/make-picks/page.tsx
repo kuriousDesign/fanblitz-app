@@ -202,7 +202,7 @@ export default function MakePicksPage() {
           >
             Reset Picks
           </Button>
-          {isAdmin && <ServerActionButton label="Update Available Matchups" serverAction={updateMatchups} />}
+          {/* {isAdmin && <ServerActionButton label="Update Available Matchups" serverAction={updateMatchups} />} */}
           {/* {isAdmin && <ServerActionButton label="Update Scores" serverAction={updateScores} />} */}
         </PageActions>
         <div className={`mt-2 text-sm ${numGamesSelected >= gameWeek.num_selections ? 'text-green-600' : 'text-muted-foreground'}`}>
