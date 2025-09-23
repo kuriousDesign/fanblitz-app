@@ -24,6 +24,8 @@ import { createAndPostGameWeeksForSeason } from "@/actions/postGameWeek";
 export default async function CardGameWeeks() {
     const isAdmin = await getIsAdmin();
     const gameWeeks = await getGameWeeks();
+    // sort the game weeks by week number ascending
+    gameWeeks.sort((a, b) => (a.week || 0) - (b.week || 0));
     console.log("GameWeeks: ", gameWeeks.length);
 
             const create2025GameWeeks = async () => {
@@ -34,7 +36,7 @@ export default async function CardGameWeeks() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Game Weeks 2025</CardTitle>
+                <CardTitle>College Game Weeks 2025</CardTitle>
                 <CardDescription>
                     Game weeks that will contain weekly matchups.
                 </CardDescription>

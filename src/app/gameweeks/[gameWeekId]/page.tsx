@@ -59,7 +59,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
 
     const title = gameWeek.name
     // put game week week number as desc
-    const description = `Week ${gameWeek.week}`
+    const description = `College Week ${gameWeek.week}`
 
     // i need a switch case statement to handle showing the picks leaderboard vs picks card, based on game.status
     let showLeaderboard = false;

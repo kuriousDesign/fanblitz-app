@@ -184,7 +184,7 @@ export default function MakePicksPage() {
     <div>
       <PageHeader>
         <PageHeaderHeading>
-          Make Week {gameWeek.week} Picks
+          Make College Week {gameWeek.week} Picks
         </PageHeaderHeading>
         <PageHeaderDescription>
           {new Date(gameWeek.start_date).toLocaleDateString()} - {new Date(gameWeek.end_date).toLocaleDateString()}
