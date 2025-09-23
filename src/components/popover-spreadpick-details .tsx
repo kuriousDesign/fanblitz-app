@@ -1,5 +1,16 @@
+//import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+    Drawer,
+    //DrawerClose,
+    DrawerContent,
+    //DrawerDescription,
+    //DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer"
+
 import { MatchupSpreadPredictionClientType, SpreadPickClientType } from '@/models/SpreadPick';
 
 import {
@@ -46,25 +57,20 @@ export function PopoverSpreadPickDetails({
 
 
     return (
-        <Popover>
-            <PopoverTrigger asChild>
+        <Drawer>
+            <DrawerTrigger asChild>
                 <Button variant="outline" size="icon">
                     <ChevronDownIcon className="h-4 w-4" />
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[100vw] overflow-y-scroll" side="bottom" align="end">
-                <div className="space-y-8">
-
+            </DrawerTrigger>
+            <DrawerContent className='max-h-[80vh] overflow-y-auto'>
+                <DrawerHeader>
+                    <DrawerTitle>Predictions</DrawerTitle>
+                </DrawerHeader>
+                <div className="p-4">
                     <div className="bg-accent/10">
-                        <div className="font-semibold text-lg text-center">
-                            Predictions
-                        </div>
-
                         <div className="space-y-2">
-                            {/* Insert top driver table here */}
-
                             <Table>
-
                                 <TableHeader className='bg-gray-300/10'>
                                     <TableRow>
                                         {tableHeads.map((head, index) => (
@@ -76,7 +82,6 @@ export function PopoverSpreadPickDetails({
                                 </TableHeader>
                                 <TableBody>
                                     {spreadPick.matchup_spread_predictions.map((prediction: MatchupSpreadPredictionClientType, index: number) => (
-
                                         <TableRow key={index}>
                                             <TableCell className="text-center">{index + 1}</TableCell>
                                             <TableCell className="text-center text-primary font-bold">{selectionDisplayNames[index]}</TableCell>
@@ -87,10 +92,8 @@ export function PopoverSpreadPickDetails({
                             </Table>
                         </div>
                     </div>
-
-
                 </div>
-            </PopoverContent>
-        </Popover>
+            </DrawerContent>
+        </Drawer>
     );
 }
