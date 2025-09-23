@@ -43,15 +43,17 @@ export function PopoverSpreadPickDetails({
 
         { label: "Pick", className: "text-left" },
         { label: "Predicted", className: "text-center font-bold" },
-        { label: "Points", className: "text-center" }
+        { label: "Correct?", className: "text-center" }
     ];
 
 
     const selectionDisplayNames: { [key: string]: string } = {};
+    const isCorrect: { [key: string]: boolean } = {};
     spreadPick.matchup_spread_predictions.forEach((prediction, index) => {
         const matchup = matchups.find((m: MatchupClientType) => m._id === prediction.matchup_id);
         if (matchup) {
             selectionDisplayNames[index] = prediction.selection === "home" ? matchup.home_team : matchup.away_team;
+            isCorrect[index] = (prediction.selection + '_team') === matchup.winner;
         }
     });
 
@@ -82,10 +84,10 @@ export function PopoverSpreadPickDetails({
                                 </TableHeader>
                                 <TableBody>
                                     {spreadPick.matchup_spread_predictions.map((prediction: MatchupSpreadPredictionClientType, index: number) => (
-                                        <TableRow key={index}>
+                                        <TableRow key={index} className={isCorrect[index] ? "text-primary" : "text-muted-foreground"}>
                                             <TableCell className="text-center">{index + 1}</TableCell>
-                                            <TableCell className="text-center text-primary font-bold">{selectionDisplayNames[index]}</TableCell>
-                                            <TableCell className="text-center">{prediction.score}</TableCell>
+                                            <TableCell className="text-center font-bold">{selectionDisplayNames[index]}</TableCell>
+                                            <TableCell className="text-center">{prediction.score === 1 ? "✅" : "❌"}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

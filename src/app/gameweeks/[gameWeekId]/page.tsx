@@ -20,10 +20,12 @@ import TabCard, { FilterOption } from '@/components/cards/tab-card';
 import PeekDiv from '@/components/cards/pick-div';
 import { GameStates, gameStatesToString } from '@/types/enums';
 
-import CardWinningPick from '@/components/card-winning-pick';
+//import CardWinningPick from '@/components/card-winning-pick';
 import { getGameWeek, getMatchupsByGameWeek, getSpreadPicks } from '@/actions/getMatchups';
 import { SpreadPickClientType } from '@/models/SpreadPick';
 import TableSpreadPickLeaderboard, { PickLeaderboardSkeleton } from '@/components/tables/spreadpick-leaderboard';
+
+// import Card from '@/components/ui/card';
 
 export default async function GameWeekPage({ params }: { params: Promise<{ gameWeekId: string }> }) {
     const playerPromise = getCurrentPlayer();
@@ -47,7 +49,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
         picksPromise,
     ]);
 
-    let winningPicks: SpreadPickClientType[] = [];
+    const winningPicks: SpreadPickClientType[] = [];
 
     // Define filterable options
     const filterableOptionsPicks = [
@@ -62,6 +64,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
     // i need a switch case statement to handle showing the picks leaderboard vs picks card, based on game.status
     let showLeaderboard = false;
     let showMakePicksBtn = false;
+    let showUpdateScoresBtn = false;
     switch (gameWeek.status) {
         case GameStates.OPEN:
             showLeaderboard = false;
@@ -70,6 +73,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
         case GameStates.IN_PLAY:
             showLeaderboard = true;
             showMakePicksBtn = true;
+            showUpdateScoresBtn = true;
             break;
         case GameStates.FINISHED:
             showLeaderboard = true;
@@ -81,9 +85,9 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                 }
                 else if (picks[i].score_total > picks[0].score_total) {
                     // trigger toast error if somehow the picks are out of order
-                    console.error('Picks are not sorted by score_total in descending order');
-                    winningPicks = []; // reset winning picks if scores are not in order
-                    break; // stop if the score is different
+                    //console.error('Picks are not sorted by score_total in descending order');
+                    //winningPicks = []; // reset winning picks if scores are not in order
+                    //break; // stop if the score is different
                 }
             }
 
@@ -110,9 +114,9 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                 Game Status: {gameStatesToString(gameWeek.status as GameStates)}
                 <br />
                 <span className="text-med text-primary">Current Pot: ${gameWeek.purse_amount.toFixed(0)} </span>
-                {gameWeek.status === GameStates.FINISHED && winningPicks.length > 0 && winningPicks.map((pick, index) => (
+                {/* {gameWeek.status === GameStates.FINISHED && winningPicks.length > 0 && winningPicks.map((pick, index) => (
                     pick._id && <CardWinningPick key={index} pickId={pick._id} />
-                ))}
+                ))} */}
                 {/* <GameDetails game={gameWeek} races={races} /> */}
                 <PageActions>
                     <div className="flex flex-wrap items-center gap-2">
@@ -121,7 +125,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                         {/* {isAdmin && <BtnChangeGameState state={GameStates.OPEN} game={gameWeek as GameClientType} />} */}
                         {/* {isAdmin && <BtnChangeGameState game={gameWeekId as GameClientType} />} */}
                         {/* {isAdmin && <BtnChangeGameState game={gameWeekId as GameClientType} />} */}
-                        {isAdmin && <ButtonUpdateGameWeekLeaderboard gameWeekId={gameWeekId} />}
+                        {isAdmin && showUpdateScoresBtn && <ButtonUpdateGameWeekLeaderboard gameWeekId={gameWeekId} />}
     
                         {showMakePicksBtn && 
                             <LinkButton

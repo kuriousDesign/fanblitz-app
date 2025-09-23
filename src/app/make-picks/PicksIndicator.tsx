@@ -12,7 +12,7 @@ export default function PicksIndicator({
   const circumference = 2 * Math.PI * radius;
 
   return (
-    <div className="top-3 right-13 fixed z-150">
+    <div className="top-8 right-13 fixed z-150">
       <motion.div
         className="relative w-16 h-16 "
         initial={{ scale: 0.9, opacity: 0 }}

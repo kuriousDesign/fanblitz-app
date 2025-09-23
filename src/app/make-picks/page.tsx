@@ -18,7 +18,7 @@ import { postSpreadPick } from "@/actions/postPick";
 
 import { Button } from "@/components/ui";
 import PicksIndicator from "./PicksIndicator";
-import { updateOddsApiNcaaMatchupsScoresByGameWeek } from "@/actions/getOddsApi";
+// import { updateOddsApiNcaaMatchupsScoresByGameWeek } from "@/actions/getOddsApi";
 
 
 export default function MakePicksPage() {
@@ -46,7 +46,7 @@ export default function MakePicksPage() {
       }
 
       //const gameWeekData = await getActiveGameWeek();
-      const gameWeekData = await getGameWeekByWeek(4); // temp fix to week 4
+      const gameWeekData = await getGameWeekByWeek(5); // temp fix to week 4
       if (!gameWeekData || !gameWeekData._id) {
         console.error("No active game week found");
         return;
@@ -153,14 +153,14 @@ export default function MakePicksPage() {
     await updateSpreadDataNcaaFootballGameWeekMatchups(gameWeek._id as string);
   };
 
-  const updateScores = async () => {
+  // const updateScores = async () => {
 
-    if (!gameWeek || !gameWeek._id) {
-      console.error("No active game week found");
-      return;
-    }
-    await updateOddsApiNcaaMatchupsScoresByGameWeek(gameWeek._id as string);
-  };
+  //   if (!gameWeek || !gameWeek._id) {
+  //     console.error("No active game week found");
+  //     return;
+  //   }
+  //   await updateOddsApiNcaaMatchupsScoresByGameWeek(gameWeek._id as string);
+  // };
 
   // create a function that will reset all prediction
   const resetPredictions = async () => {
@@ -203,7 +203,7 @@ export default function MakePicksPage() {
             Reset Picks
           </Button>
           {isAdmin && <ServerActionButton label="Update Available Matchups" serverAction={updateMatchups} />}
-          {isAdmin && <ServerActionButton label="Update Scores" serverAction={updateScores} />}
+          {/* {isAdmin && <ServerActionButton label="Update Scores" serverAction={updateScores} />} */}
         </PageActions>
         <div className={`mt-2 text-sm ${numGamesSelected >= gameWeek.num_selections ? 'text-green-600' : 'text-muted-foreground'}`}>
           {numGamesSelected} of {gameWeek.num_selections} games selected
