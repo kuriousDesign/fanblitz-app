@@ -3,7 +3,7 @@ export const experimental_ppr = true;
 import { Suspense } from 'react';
 
 import { getCurrentPlayer } from '@/actions/getActions';
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 import {
     PageActions,
@@ -154,9 +154,6 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                             <CardHeader >
                                 Leaderboard
                             </CardHeader>
-                            <CardDescription >
-                                See how each pick is doing in this game.
-                            </CardDescription>
                             <CardContent>
                                 {picks &&
                                     <Suspense fallback={<PickLeaderboardSkeleton />}>

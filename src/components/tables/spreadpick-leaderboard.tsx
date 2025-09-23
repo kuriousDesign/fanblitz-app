@@ -1,7 +1,7 @@
 import {
     Table,
     TableBody,
-    TableCaption,
+    //TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -39,7 +39,7 @@ export default async function TableSpreadPickLeaderboard({ picks, matchups }: { 
 
     return (
         <Table>
-            <TableCaption>leaderboard of player picks</TableCaption>
+            {/* <TableCaption>leaderboard of player picks</TableCaption> */}
             <TableHeader>
                 <TableRow>
                     {tableHeads.map((head, index) => (
