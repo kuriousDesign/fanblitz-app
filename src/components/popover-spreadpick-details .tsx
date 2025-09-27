@@ -6,8 +6,8 @@ import {
     DrawerContent,
     //DrawerDescription,
     //DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
+    // DrawerHeader,
+    // DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer"
 
@@ -44,8 +44,8 @@ export function PopoverSpreadPickDetails({
     // need to create table headers dependent on game type
     const tableHeads = [
 
-        { label: "Pick", className: "text-left" },
-        { label: "Predicted", className: "text-center font-bold" },
+        { label: "#", className: "text-left" },
+        { label: "Picked", className: "text-center font-bold" },
     ];
 
     if (gameStatus === GameStates.FINISHED) {
@@ -78,10 +78,10 @@ export function PopoverSpreadPickDetails({
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='overflow-y-auto'>
-                <DrawerHeader>
+                {/* <DrawerHeader>
                     <DrawerTitle>Predictions</DrawerTitle>
-                </DrawerHeader>
-                <div className="p-4">
+                </DrawerHeader> */}
+                <div className="p-2">
                     <div className="bg-accent/10">
                         <div className="space-y-2">
                             <Table>
@@ -94,17 +94,16 @@ export function PopoverSpreadPickDetails({
                                         ))}
                                     </TableRow>
                                 </TableHeader>
-                                <TableBody>
+                                <TableBody className='text-xs overflow-y-auto'>
                                     {spreadPick.matchup_spread_predictions.map((prediction: MatchupSpreadPredictionClientType, index: number) => (
-                                        <TableRow key={index} className={isCorrect[index] ? "text-primary" : "text-muted-foreground"}>
-                                            <TableCell className="text-center">{index + 1}</TableCell>
-                                            <TableCell className="text-center font-bold">{selectionDisplayNames[index]}</TableCell>
+                                        <TableRow key={index} className={`py-0 ${isCorrect[index] ? "text-primary" : "text-muted-foreground"}`}>
+                                            <TableCell className="text-center py-0">{index + 1}</TableCell>
+                                            <TableCell className="text-center font-bold py-0">{selectionDisplayNames[index]}</TableCell>
                                             {gameStatus === GameStates.FINISHED ? (
-                                                <TableCell className="text-center">{isCorrect[index] ? "✔️" : "❌"}</TableCell>
+                                                <TableCell className="text-center py-0">{isCorrect[index] ? "✔️" : "❌"}</TableCell>
                                             ) : (
-                                                <TableCell className="text-center">{isSpreadFavorite[index] ? `-${prediction.spread_points}` : `+${prediction.spread_points}`}</TableCell>
+                                                <TableCell className="text-center py-0">{isSpreadFavorite[index] ? `-${prediction.spread_points}` : `+${prediction.spread_points}`}</TableCell>
                                             )}
-                                           
                                         </TableRow>
                                     ))}
                                 </TableBody>
