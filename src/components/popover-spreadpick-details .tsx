@@ -77,7 +77,7 @@ export function PopoverSpreadPickDetails({
                     <ChevronDownIcon className="h-4 w-4" />
                 </Button>
             </DrawerTrigger>
-            <DrawerContent className='max-h-[80vh] overflow-y-auto'>
+            <DrawerContent className='overflow-y-auto'>
                 <DrawerHeader>
                     <DrawerTitle>Predictions</DrawerTitle>
                 </DrawerHeader>
