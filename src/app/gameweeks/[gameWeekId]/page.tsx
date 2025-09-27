@@ -24,6 +24,8 @@ import { GameStates, gameStatesToString } from '@/types/enums';
 import { getGameWeek, getMatchupsByGameWeek, getSpreadPicks } from '@/actions/getMatchups';
 import { SpreadPickClientType } from '@/models/SpreadPick';
 import TableSpreadPickLeaderboard, { PickLeaderboardSkeleton } from '@/components/tables/spreadpick-leaderboard';
+import BtnChangeGameWeekState from '@/components/button-change-gameweek-state';
+import { GameWeekClientType } from '@/models/GameWeek';
 
 // import Card from '@/components/ui/card';
 
@@ -67,12 +69,10 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
     let showUpdateScoresBtn = false;
     switch (gameWeek.status) {
         case GameStates.OPEN:
-            showLeaderboard = false;
             showMakePicksBtn = true;
             break;
         case GameStates.IN_PLAY:
             showLeaderboard = true;
-            showMakePicksBtn = true;
             showUpdateScoresBtn = true;
             break;
         case GameStates.FINISHED:
@@ -107,7 +107,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                 <PageHeaderDescription>{description}</PageHeaderDescription>
                 {gameWeek.num_selections > 0 &&
                     <p className="text-med font-light text-accent-foreground">
-                        Choose {gameWeek.num_selections} Predictions
+                        {gameWeek.num_selections} Predictions
                     </p>
                 }
                 <br />
@@ -124,7 +124,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                         {/* {(true || gameWeek.status === GameStates.IN_PLAY) && isAdmin && <ButtonUpdateGame gameId={gameId} />} */}
                         {/* {isAdmin && <BtnChangeGameState state={GameStates.OPEN} game={gameWeek as GameClientType} />} */}
                         {/* {isAdmin && <BtnChangeGameState game={gameWeekId as GameClientType} />} */}
-                        {/* {isAdmin && <BtnChangeGameState game={gameWeekId as GameClientType} />} */}
+                        {isAdmin && <BtnChangeGameWeekState game={gameWeek as GameWeekClientType} />}
                         {isAdmin && showUpdateScoresBtn && <ButtonUpdateGameWeekLeaderboard gameWeekId={gameWeekId} />}
     
                         {showMakePicksBtn && 
@@ -157,7 +157,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                             <CardContent>
                                 {picks &&
                                     <Suspense fallback={<PickLeaderboardSkeleton />}>
-                                        <TableSpreadPickLeaderboard picks={picks} matchups={matchups} />
+                                        <TableSpreadPickLeaderboard picks={picks} matchups={matchups} gameStatus={gameWeek.status as GameStates} />
                                     </Suspense>
                                 }
                             </CardContent>

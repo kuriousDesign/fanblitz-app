@@ -26,15 +26,18 @@ import { Button } from '@/components/ui/button';
 import { ChevronDownIcon } from 'lucide-react';
 import { MatchupClientType } from '@/models/Matchup';
 import React from 'react';
+import { GameStates } from "@/types/enums";
 
 interface PopoverPickDetailsProps {
     spreadPick: SpreadPickClientType;
     matchups: MatchupClientType[];
+    gameStatus: GameStates;
 }
 
 export function PopoverSpreadPickDetails({
     spreadPick,
     matchups,
+    gameStatus
 }: PopoverPickDetailsProps) {
 
 
@@ -43,17 +46,26 @@ export function PopoverSpreadPickDetails({
 
         { label: "Pick", className: "text-left" },
         { label: "Predicted", className: "text-center font-bold" },
-        { label: "Correct?", className: "text-center" }
     ];
+
+    if (gameStatus === GameStates.FINISHED) {
+        tableHeads.push({ label: "Correct?", className: "text-center" });
+        //tableCellSpecial = 
+    } else {
+        tableHeads.push({ label: "Spread", className: "text-center" });
+        //tableCellSpecial = <TableCell className="text-center">{prediction.spread}</TableCell>;
+    }
 
 
     const selectionDisplayNames: { [key: string]: string } = {};
     const isCorrect: { [key: string]: boolean } = {};
+    const isSpreadFavorite: { [key: string]: boolean } = {};
     spreadPick.matchup_spread_predictions.forEach((prediction, index) => {
         const matchup = matchups.find((m: MatchupClientType) => m._id === prediction.matchup_id);
         if (matchup) {
             selectionDisplayNames[index] = prediction.selection === "home" ? matchup.home_team : matchup.away_team;
             isCorrect[index] = (prediction.selection + '_team') === matchup.winner;
+            isSpreadFavorite[index] = (matchup.spread_favorite_team === (prediction.selection + '_team')); // true if the predicted team was the favorite
         }
     });
 
@@ -87,7 +99,12 @@ export function PopoverSpreadPickDetails({
                                         <TableRow key={index} className={isCorrect[index] ? "text-primary" : "text-muted-foreground"}>
                                             <TableCell className="text-center">{index + 1}</TableCell>
                                             <TableCell className="text-center font-bold">{selectionDisplayNames[index]}</TableCell>
-                                            <TableCell className="text-center">{prediction.score === 1 ? "✅" : "❌"}</TableCell>
+                                            {gameStatus === GameStates.FINISHED ? (
+                                                <TableCell className="text-center">{isCorrect[index] ? "✔️" : "❌"}</TableCell>
+                                            ) : (
+                                                <TableCell className="text-center">{isSpreadFavorite[index] ? `-${prediction.spread_points}` : `+${prediction.spread_points}`}</TableCell>
+                                            )}
+                                           
                                         </TableRow>
                                     ))}
                                 </TableBody>

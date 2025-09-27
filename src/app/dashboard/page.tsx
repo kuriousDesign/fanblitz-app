@@ -49,9 +49,9 @@ export default async function DashboardPage() {
     }
     const isAdmin = await getIsAdmin();
 
-    const gameWeek4 = await getGameWeekByWeek(4);
-    if (!gameWeek4 || !gameWeek4._id) {
-        return <div>No game week found for week 4</div>;
+    const gameWeek5 = await getGameWeekByWeek(5);
+    if (!gameWeek5 || !gameWeek5._id) {
+        return <div>No game week found for week 5</div>;
     }
 
 
@@ -73,8 +73,8 @@ export default async function DashboardPage() {
                     }
      
                         <LinkButton
-                            href={getLinks().getGameWeekUrl(gameWeek4._id)}>
-                            See Game Week 4
+                            href={getLinks().getGameWeekUrl(gameWeek5._id)}>
+                            See Game Week {gameWeek5.week}
                         </LinkButton>
                     
 

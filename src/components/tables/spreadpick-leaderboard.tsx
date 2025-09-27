@@ -11,6 +11,7 @@ import { Separator } from "../ui/separator";
 import { SpreadPickClientType } from "@/models/SpreadPick";
 import { PopoverSpreadPickDetails } from "../popover-spreadpick-details ";
 import { MatchupClientType } from "@/models/Matchup";
+import { GameStates } from "@/types/enums";
 
 
 export function convertIndexToLetter(index: number): string {
@@ -18,7 +19,7 @@ export function convertIndexToLetter(index: number): string {
     return letters[index % letters.length];
 }
 
-export default async function TableSpreadPickLeaderboard({ picks, matchups }: { picks: SpreadPickClientType[], matchups: MatchupClientType[] }) {
+export default async function TableSpreadPickLeaderboard({ picks, matchups, gameStatus }: { picks: SpreadPickClientType[], matchups: MatchupClientType[], gameStatus: GameStates }) {
     if (!picks || picks.length === 0) {
         return <div className="text-center text-gray-500">No picks available.</div>;
     }
@@ -32,10 +33,15 @@ export default async function TableSpreadPickLeaderboard({ picks, matchups }: { 
         { label: "Rank", className: "text-center" },
         
         { label: "Name", className: "text-center font-bold" },
+        
+        
         { label: "Score", className: "text-center" },
     ];
-
-    tableHeads.push({ label: "Pick Nickname", className: "text-left" });
+    if (gameStatus === GameStates.IN_PLAY) {
+        //tableHeads.push({ label: "Spread", className: "text-left" });
+    } else if (gameStatus === GameStates.FINISHED) {
+        //tableHeads.push({ label: "Correct?", className: "text-left" });
+    }
 
     return (
         <Table>
@@ -53,13 +59,13 @@ export default async function TableSpreadPickLeaderboard({ picks, matchups }: { 
                 {picks.map((pick: SpreadPickClientType, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="text-center">
-                            <PopoverSpreadPickDetails spreadPick={pick} matchups={matchups} />
+                            <PopoverSpreadPickDetails spreadPick={pick} matchups={matchups} gameStatus={gameStatus} />
                         </TableCell>
                         <TableCell className="text-center">{pick.rank}</TableCell>
                         
                         <TableCell className="text-center font-bold">{pick.name}</TableCell>
                         <TableCell className="text-center text-primary font-bold">{Number(pick.score_total.toFixed(3)).toString()}</TableCell>
-                        <TableCell className="text-left">{pick.nickname}</TableCell>
+    
                     </TableRow>
                 ))}
             </TableBody>
