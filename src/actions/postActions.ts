@@ -23,6 +23,8 @@ import { Roles } from '@/types/enums';
 import { checkIsAdminByEmail } from '@/lib/utils';
 
 import type { DefaultUser } from '@auth/core/types';
+import { revalidateTag } from 'next/cache';
+import { CacheTags } from '@/lib/cache-tags';
 
 
 
@@ -241,6 +243,12 @@ export const postRacer = async (racer: Partial<RacerDoc | RacerClientType> & { _
 
 export const postPlayer = async (player: Partial<PlayerDoc | PlayerClientType> & { _id?: string }) => {
   await connectToDb();
+        const thisCacheTag = 'players';
+        //if thisCacheTag exists in CacheTags enum, revalidate it
+        if (thisCacheTag in CacheTags) {
+          console.log(`Revalidating tag: ${thisCacheTag}`);
+          revalidateTag(thisCacheTag);
+        }
 
   const { _id, ...rest } = player;
   if (_id && _id !== '') {

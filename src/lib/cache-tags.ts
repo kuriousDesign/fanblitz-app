@@ -7,6 +7,8 @@ export enum CacheTags {
     LOGS = "logs",
     EVENTS = "events",
     PICKS = "picks",
+    SPREADPICK = "spreadpick",
+    MATCHUPS = "matchups",
     RACES = "races",
     HARDCHARGERTABLES = "hardchargertables",
     PAYMENTS = "payments",
