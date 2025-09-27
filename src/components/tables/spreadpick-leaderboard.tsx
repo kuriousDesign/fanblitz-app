@@ -59,7 +59,7 @@ export default async function TableSpreadPickLeaderboard({ picks, matchups, game
                 {picks.map((pick: SpreadPickClientType, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="text-center">
-                            <PopoverSpreadPickDetails spreadPick={pick} matchups={matchups} gameStatus={gameStatus} />
+                            <PopoverSpreadPickDetails spreadPick={pick} matchups={matchups} />
                         </TableCell>
                         <TableCell className="text-center">{pick.rank}</TableCell>
                         
