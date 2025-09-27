@@ -152,7 +152,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                     } */}
                     {showLeaderboard &&
                         <Card>
-                            <CardHeader >
+                            <CardHeader className='text-center font-bold text-lg' >
                                 Leaderboard
                             </CardHeader>
                             <CardContent>

@@ -29,13 +29,10 @@ export default async function TableSpreadPickLeaderboard({ picks, matchups, game
 
     // Create an array of table headers
     const tableHeads = [
-        { label: "", className: "text-center" },
         { label: "Rank", className: "text-center" },
-        
         { label: "Name", className: "text-center font-bold" },
-        
-        
         { label: "Score", className: "text-center" },
+        { label: "Details", className: "text-center" },
     ];
     if (gameStatus === GameStates.IN_PLAY) {
         //tableHeads.push({ label: "Spread", className: "text-left" });
@@ -58,14 +55,12 @@ export default async function TableSpreadPickLeaderboard({ picks, matchups, game
             <TableBody>
                 {picks.map((pick: SpreadPickClientType, index: number) => (
                     <TableRow key={index}>
+                        <TableCell className="text-center">{pick.rank}</TableCell>
+                        <TableCell className="text-center font-bold">{pick.name}</TableCell>
+                        <TableCell className="text-center text-primary font-bold">{Number(pick.score_total.toFixed(3)).toString()}</TableCell>
                         <TableCell className="text-center">
                             <PopoverSpreadPickDetails spreadPick={pick} matchups={matchups} />
                         </TableCell>
-                        <TableCell className="text-center">{pick.rank}</TableCell>
-                        
-                        <TableCell className="text-center font-bold">{pick.name}</TableCell>
-                        <TableCell className="text-center text-primary font-bold">{Number(pick.score_total.toFixed(3)).toString()}</TableCell>
-    
                     </TableRow>
                 ))}
             </TableBody>
@@ -83,14 +78,14 @@ export function PickLeaderboardSkeleton() {
                 <div className="bg-secondary h-8 rounded-md col-span-4"></div>
 
                 {Array.from({ length: 3 }).map((_, index) => (
-                    <div key={index} className="col-span-4 grid grid-cols-4 gap-2"> 
-                        <Separator className="col-span-4"/>
-                        <div className="bg-muted/80 h-6 rounded-md"/>
-                        <div className="bg-muted/80 h-6 rounded-md col-span-2"/>
-                        <div className="bg-muted/80 h-6 rounded-md"/>
+                    <div key={index} className="col-span-4 grid grid-cols-4 gap-2">
+                        <Separator className="col-span-4" />
+                        <div className="bg-muted/80 h-6 rounded-md" />
+                        <div className="bg-muted/80 h-6 rounded-md col-span-2" />
+                        <div className="bg-muted/80 h-6 rounded-md" />
                     </div>
                 ))}
             </div>
         </div>
-    );       
+    );
 }

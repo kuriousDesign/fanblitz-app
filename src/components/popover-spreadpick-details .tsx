@@ -42,8 +42,8 @@ export function PopoverSpreadPickDetails({
 
     // need to create table headers dependent on game type
     const tableHeads = [
-        { label: "#", className: "text-left" },
-        { label: "Picked", className: "text-left font-bold" },
+        { label: "#", className: "text-center" },
+        { label: "Picked", className: "text-left" },
         { label: "Spread", className: "text-center" },
         { label: "Result", className: "text-center" },
     ];
@@ -80,9 +80,9 @@ export function PopoverSpreadPickDetails({
                 </DrawerHeader>
                 <div className="p-2">
                     <div className="bg-accent/10">
-                        <div className="space-y-2">
+                        <div className="space-y-2 px-2">
                             <Table>
-                                <TableHeader className='bg-gray-300/10 text-lg'>
+                                <TableHeader className='bg-gray-300/10 text-sm'>
                                     <TableRow>
                                         {tableHeads.map((head, index) => (
                                             <TableHead key={index} className={head.className}>
@@ -95,7 +95,7 @@ export function PopoverSpreadPickDetails({
                                     {spreadPick.matchup_spread_predictions.map((prediction: MatchupSpreadPredictionClientType, index: number) => (
                                         <TableRow key={index} className={`py-0 ${isCorrect[index] ? "text-primary" : "text-muted-foreground"}`}>
                                             <TableCell className="text-center py-0">{index + 1}</TableCell>
-                                            <TableCell className="text-center font-bold py-0">{selectionDisplayNames[index]}</TableCell>
+                                            <TableCell className="text-left font-bold py-0">{selectionDisplayNames[index]}</TableCell>
                                             <TableCell className="text-center py-0">{isSpreadFavorite[index] ? `-${prediction.spread_points}` : `+${prediction.spread_points}`}</TableCell>
                                             <TableCell className="text-center py-0">
                                                 {predictionMatchups[index]?.status === 'finished'
