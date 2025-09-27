@@ -69,6 +69,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
     let showUpdateScoresBtn = false;
     switch (gameWeek.status) {
         case GameStates.OPEN:
+            showLeaderboard = true;
             showMakePicksBtn = true;
             break;
         case GameStates.IN_PLAY:
