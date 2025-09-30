@@ -46,7 +46,8 @@ export default function MakePicksPage() {
       }
 
       //const gameWeekData = await getActiveGameWeek();
-      const gameWeekData = await getGameWeekByWeek(5); // temp fix to week 4
+      const currentGameWeek = 6;
+      const gameWeekData = await getGameWeekByWeek(currentGameWeek);
       if (!gameWeekData || !gameWeekData._id) {
         console.error("No active game week found");
         return;
