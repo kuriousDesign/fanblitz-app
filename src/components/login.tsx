@@ -6,6 +6,7 @@ import { FaGoogle, FaFacebook } from "react-icons/fa6";
 
 
 export function SignIn() {
+	const hideFbBtn = true;
 	return (
 		<div className="flex flex-col space-y-4">
 			<form
@@ -20,7 +21,7 @@ export function SignIn() {
 				</Button>
 			</form>
 			
-			<form
+			{!hideFbBtn && <form
 				action={async () => {
 					"use server";
 					await signIn("facebook");
@@ -30,7 +31,7 @@ export function SignIn() {
 					<FaFacebook />
 					Sign in using Facebook
 				</Button>
-			</form>
+			</form>}
 		</div>
 	);
 }

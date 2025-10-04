@@ -18,7 +18,7 @@ import { getIsAdmin } from '@/actions/userActions';
 
 //import { FilterOption } from '@/components/cards/tab-card';
 //import PeekDiv from '@/components/cards/pick-div';
-import { GameStates, gameStatesToString } from '@/types/enums';
+import { GameStates, gameStateToString } from '@/types/enums';
 
 //import CardWinningPick from '@/components/card-winning-pick';
 import { getGameWeek, getMatchupsByGameWeek, getSpreadPicks } from '@/actions/getMatchups';
@@ -112,7 +112,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                     </p>
                 }
                 <br />
-                Game Status: {gameStatesToString(gameWeek.status as GameStates)}
+                Game Status: {gameStateToString(gameWeek.status as GameStates)}
                 <br />
                 <span className="text-med text-primary">Current Pot: ${gameWeek.purse_amount.toFixed(0)} </span>
                 {/* {gameWeek.status === GameStates.FINISHED && winningPicks.length > 0 && winningPicks.map((pick, index) => (
@@ -121,13 +121,8 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                 {/* <GameDetails game={gameWeek} races={races} /> */}
                 <PageActions>
                     <div className="flex flex-wrap items-center gap-2">
-
-                        {/* {(true || gameWeek.status === GameStates.IN_PLAY) && isAdmin && <ButtonUpdateGame gameId={gameId} />} */}
-                        {/* {isAdmin && <BtnChangeGameState state={GameStates.OPEN} game={gameWeek as GameClientType} />} */}
-                        {/* {isAdmin && <BtnChangeGameState game={gameWeekId as GameClientType} />} */}
                         {isAdmin && <BtnChangeGameWeekState game={gameWeek as GameWeekClientType} />}
                         {isAdmin && showUpdateScoresBtn && <ButtonUpdateGameWeekLeaderboard gameWeekId={gameWeekId} />}
-    
                         {showMakePicksBtn && 
                             <LinkButton
                                 href={getLinks().getMakePicksUrl()}>

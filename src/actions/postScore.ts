@@ -62,17 +62,23 @@ export async function updateSpreadPicksScoresByGameWeek(gameWeekId: string, skip
 // Calculate scores for picks
 export async function calculateScoreForSpreadPicks(spreadPicks: SpreadPickClientType[], matchups: MatchupClientType[]): Promise<void> {
     for (const pick of spreadPicks) {
-        pick.score_total = 0;
+        // First, calculate scores for all predictions
         await Promise.all(pick.matchup_spread_predictions.map(async (prediction: MatchupSpreadPredictionClientType) => {
             const matchup = prediction.matchup_id ? matchups.find(m => m._id === prediction.matchup_id) : null;
 
             if (matchup) {
                 prediction.score = await calculateScoreForPrediction(prediction, matchup);
-                pick.score_total += prediction.score;
             }
         }));
+        
+        // Then, calculate the total score
+        pick.score_total = 0;
+        for (const prediction of pick.matchup_spread_predictions) {
+            pick.score_total += prediction.score || 0;
+        }
+        
         pick.status = 'score_updated';
-        //console.log(`Pick ${pick._id} total score: ${pick.score_total}`); // Log the total score for each pick
+        console.log(`Pick ${pick._id} total score: ${pick.score_total}`); // Log the total score for each pick
 
     }
 }

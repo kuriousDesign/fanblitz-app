@@ -20,7 +20,7 @@ import TableHardChargerLeaderboard from '@/components/tables/hard-charger-leader
 
 import TabCard, { FilterOption } from '@/components/cards/tab-card';
 import PeekDiv from '@/components/cards/pick-div';
-import { GameStates, gameStatesToString } from '@/types/enums';
+import { GameStates, gameStateToString } from '@/types/enums';
 
 import { GameClientType } from '@/models/reference/Game';
 import BtnChangeGameState from '../../../components/button-change-game-state';
@@ -152,7 +152,7 @@ export default async function GamePage({ params }: { params: Promise<{ gameId: s
 					</p>
 				}
 				<br />
-				Game Status: {gameStatesToString(game.status as GameStates)}
+				Game Status: {gameStateToString(game.status as GameStates)}
 				<br />
 				<span className="text-med text-primary">Current Pot: ${game.purse_amount.toFixed(2)} </span>
 				{game.status === GameStates.FINISHED && winningPicks.length > 0 && winningPicks.map((pick, index) => (

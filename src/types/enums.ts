@@ -1,19 +1,19 @@
 // create an enum of GameStates 
 export enum GameStates {
+    UPCOMING = 'created',
     OPEN = 'open',
     IN_PLAY = 'in_play',
-    UPCOMING = 'created',
     FINISHED = 'finished'
 }
 
-export function gameStatesToString(state: GameStates): string {
+export function gameStateToString(state: GameStates): string {
     switch (state) {
+        case GameStates.UPCOMING:
+            return 'Upcoming';
         case GameStates.OPEN:
             return 'Open';
         case GameStates.IN_PLAY:
             return 'In Play';
-        case GameStates.UPCOMING:
-            return 'Upcoming';
         case GameStates.FINISHED:
             return 'Finished';
         default:
@@ -54,7 +54,7 @@ export function raceStatesToString(state: RaceStates): string {
         case RaceStates.LINEUP:
             return 'Lineup';
         case RaceStates.RACING:
-            return 'Racing';                        
+            return 'Racing';
         case RaceStates.FINISHED:
             return 'Finished';
         default:

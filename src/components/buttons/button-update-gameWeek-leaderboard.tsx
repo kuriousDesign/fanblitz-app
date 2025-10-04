@@ -19,6 +19,7 @@ export default function ButtonUpdateGameWeekLeaderboard({ gameWeekId }: ButtonUp
       try {
         await updateSpreadPicksScoresByGameWeek(gameWeekId);
         toast.success('Scores updated successfully!');
+        window.location.reload();
       } catch (error) {
         console.error('Error updating scores:', error);
         toast.error('Failed to update scores.');
