@@ -19,19 +19,13 @@ export const metadata = {
   description,
 }
 
-
-
-
-
-
-
 export default async function PlayersPage() {
   const playersPromise = getPlayers();
 
   // Define filterable options for displaying games
   const filterableOptionsGames = [
-    { key: "role", value: Roles.ADMIN, tabLabel: 'Admins' }, // "
     { key: "role", value: null, tabLabel: 'All' }, // "All" tab
+    { key: "role", value: Roles.ADMIN, tabLabel: 'Admins' }, // "
   ] as FilterOption[];
 
   const [players] = await Promise.all([playersPromise]);
@@ -40,7 +34,7 @@ export default async function PlayersPage() {
     <div>
       <PageHeader>
         <PageHeaderHeading>{title}</PageHeaderHeading>
-        <PageHeaderDescription>{description}</PageHeaderDescription>
+        <PageHeaderDescription>{players.length} Players Registered</PageHeaderDescription>
         <PageActions>
           {/* {isAdmin &&
             <LinkButton href={getLinks().getEventsUrl()} >

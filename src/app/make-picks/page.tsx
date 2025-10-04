@@ -18,6 +18,7 @@ import { postSpreadPick } from "@/actions/postPick";
 
 import { Button } from "@/components/ui";
 import PicksIndicator from "./PicksIndicator";
+import { GameStates } from "@/types/enums";
 // import { updateOddsApiNcaaMatchupsScoresByGameWeek } from "@/actions/getOddsApi";
 
 
@@ -101,7 +102,7 @@ export default function MakePicksPage() {
         console.log("Status changed from initialized to picking");
       }
       // if you reached the number of selections, then change status to complete
-      if( spreadPickRef.current.status === 'picking' && predictions.length >= (gameWeek?.num_selections || 0)) {
+      if (spreadPickRef.current.status === 'picking' && predictions.length >= (gameWeek?.num_selections || 0)) {
         spreadPickRef.current.status = 'picking_complete';
         spreadPickRef.current.matchup_spread_predictions = predictions;
         console.log(`Number of games selected: ${predictions.length}`);
@@ -113,7 +114,7 @@ export default function MakePicksPage() {
         console.log(`Number of games selected: ${predictions.length}`);
         await postSpreadPick(spreadPickRef.current);
       } else {
-        spreadPickRef.current.matchup_spread_predictions = predictions; 
+        spreadPickRef.current.matchup_spread_predictions = predictions;
         //console.log("Posting picks to server:", predictions[predictions.length - 1]);
         console.log(`Number of games selected: ${predictions.length}`);
         await postSpreadPick(spreadPickRef.current);
@@ -188,11 +189,40 @@ export default function MakePicksPage() {
           Make College Week {gameWeek.week} Picks
         </PageHeaderHeading>
         <PageHeaderDescription>
-          {new Date(gameWeek.start_date).toLocaleDateString()} - {new Date(gameWeek.end_date).toLocaleDateString()}
-          <br />
-          You must pick a total of {gameWeek.num_selections} games to complete your picks.
-          <br />
-          Swipe the football left or right to make your selection, and tap cancel button to remove your pick.
+          {(() => {
+            switch (gameWeek.status) {
+              case GameStates.FINISHED:
+                return (
+                  <>
+                    This game week has finished. Check back later for results.
+                  </>
+                );
+              case GameStates.IN_PLAY:
+                return (
+                  <>
+                    Games are currently in progress. No more picks can be made.
+                    <br />
+                    Check back after games complete to see results.
+                  </>
+                );
+              case GameStates.OPEN:
+                return (
+                  <>
+                    {new Date(gameWeek.start_date).toLocaleDateString()} - {new Date(gameWeek.end_date).toLocaleDateString()}
+                    <br />
+                    You must pick a total of {gameWeek.num_selections} games to complete your picks.
+                    <br />
+                    Swipe the football left or right to make your selection, and tap cancel button to remove your pick.
+                  </>
+                );
+              case GameStates.UPCOMING:
+                return (
+                  <>
+                    This game week is not yet open for picks. Check back on {new Date(gameWeek.start_date).toLocaleDateString()} to make your picks.
+                  </>
+                );
+            }
+          })()}
         </PageHeaderDescription>
         <PageActions>
           <Button
@@ -213,21 +243,23 @@ export default function MakePicksPage() {
           )}
         </div>
       </PageHeader>
-      <div className="flex flex-1 flex-col pb-6">
-        <div className="theme-container container flex flex-1 flex-col gap-4 items-center">
+      {gameWeek.status === GameStates.OPEN &&
+        <div className="flex flex-1 flex-col pb-6">
+          <div className="theme-container container flex flex-1 flex-col gap-4 items-center">
 
-          <Suspense fallback={<TabCardSkeleton />}>
-            {matchups && matchups.length > 0 && matchups.map((matchup, index) => (
-             
+            <Suspense fallback={<TabCardSkeleton />}>
+              {matchups && matchups.length > 0 && matchups.map((matchup, index) => (
+
                 <FootballSpreadPickerComponent key={index} matchup={matchup} predictions={predictions} setPredictions={setPredictions} disableSelect={numGamesSelected >= gameWeek.num_selections} />
-       
-            ))}
 
-            <PicksIndicator numPicks={numGamesSelected} numSelections={gameWeek.num_selections} />
+              ))}
 
-          </Suspense>
+              <PicksIndicator numPicks={numGamesSelected} numSelections={gameWeek.num_selections} />
+
+            </Suspense>
+          </div>
         </div>
-      </div>
+      }
     </div>
   );
 }
