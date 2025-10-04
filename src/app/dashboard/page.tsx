@@ -12,17 +12,14 @@ import { Metadata } from "next";
 import { LinkButton } from "@/components/LinkButton";
 import { getLinks } from "@/lib/link-urls";
 import { TabCardSkeleton } from "@/components/cards/tab-card";
-import { getIsAdmin } from "@/actions/userActions";
+//import { getIsAdmin } from "@/actions/userActions";
 
 //import TabCardGames from "@/components/tab-cards/games";
 import { Suspense } from "react";
 import { postNewPlayerWithUser } from "@/actions/postActions";
 import { DefaultUser } from "@auth/core/types";
 import { getGameWeekByWeek } from "@/actions/getMatchups";
-
-
-//import ButtonUpdateAvailableWeekMatchups from "@/components/button-update-available-week-matchups";
-
+import { GameStates } from "@/types/enums";
 
 
 const title = "Dashboard";
@@ -47,15 +44,13 @@ export default async function DashboardPage() {
         await postNewPlayerWithUser(user as DefaultUser);
         player = await getCurrentPlayer();
     }
-    const isAdmin = await getIsAdmin();
+    //const isAdmin = await getIsAdmin();
     const currentWeek = 6;
 
     const currentGameWeek = await getGameWeekByWeek(currentWeek);
     if (!currentGameWeek || !currentGameWeek._id) {
         return <div>No game week found for week {currentWeek}</div>;
     }
-
-
 
     return (
         <div>
@@ -65,25 +60,19 @@ export default async function DashboardPage() {
                 </PageHeaderHeading>
                 <PageHeaderDescription>{description}</PageHeaderDescription>
                 <PageActions>
-
-                    {isAdmin &&
-                        <LinkButton
-                            href={getLinks().getGameWeeksUrl()}>
-                            Game Weeks
-                        </LinkButton>
-                    }
-     
-                        <LinkButton
-                            href={getLinks().getGameWeekUrl(currentGameWeek._id)}>
-                            See Game Week {currentGameWeek.week}
-                        </LinkButton>
-                    
-
                     <LinkButton
+                        href={getLinks().getGameWeekUrl(currentGameWeek._id)}>
+                        See Game Week {currentGameWeek.week}
+                    </LinkButton>
+                    {currentGameWeek.status === GameStates.OPEN && <LinkButton
                         href={getLinks().getMakePicksUrl()}>
                         Make Picks
+                    </LinkButton>}
+                    <LinkButton
+                        variant="outline"
+                        href={getLinks().getGameWeeksUrl()}>
+                        All Weeks
                     </LinkButton>
-
                 </PageActions>
             </PageHeader>
             <div className="flex flex-1 flex-col pb-6">
@@ -100,7 +89,6 @@ export default async function DashboardPage() {
                         ) : (
                             <div>No NCAA games found.</div>
                         )} */}
-
                     </Suspense>
                 </div>
             </div>

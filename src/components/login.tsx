@@ -1,5 +1,6 @@
 import { signIn, signOut } from "@/auth";
 import { Button } from '@/components/ui';
+import { redirect } from "next/navigation";
 import { FaGoogle, FaFacebook } from "react-icons/fa6";
 
 
@@ -42,7 +43,7 @@ export function SignOut({ children }: { children: React.ReactNode }) {
 			action={async () => {
 				"use server";
 				await signOut();
-                //redirect('/'); // Redirect to home page after sign out
+                redirect('/'); // Redirect to home page after sign out
 			}}
 			className="flex flex-col items-center justify-center space-y-4"
 		>

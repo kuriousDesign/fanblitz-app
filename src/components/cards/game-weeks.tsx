@@ -14,7 +14,7 @@ import { getLinks } from "@/lib/link-urls";
 import { Separator } from "../ui/separator";
 import { IoMdAddCircle } from "react-icons/io";
 import { getIsAdmin } from "@/actions/userActions";
-import { SquarePen } from "lucide-react";
+//import { SquarePen } from "lucide-react";
 
 import { getGameWeeks } from "@/actions/getMatchups";
 import { GameWeekClientType } from "@/models/GameWeek";
@@ -70,7 +70,7 @@ export default async function CardGameWeeks() {
                                     </div>
                                 </div>
                             </Link>
-                            {isAdmin &&
+                            {/* {isAdmin &&
                                 <LinkButton
                                     size="sm"
                                     href={getLinks().getEditGameWeekUrl(gameWeek._id as string)}
@@ -80,7 +80,7 @@ export default async function CardGameWeeks() {
                                 >
                                     <SquarePen />
                                 </LinkButton>
-                            }
+                            } */}
                         </Button>
                     </div>
                 ))}

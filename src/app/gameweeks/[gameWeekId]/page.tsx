@@ -26,6 +26,7 @@ import { SpreadPickClientType } from '@/models/SpreadPick';
 import TableSpreadPickLeaderboard, { PickLeaderboardSkeleton } from '@/components/tables/spreadpick-leaderboard';
 import BtnChangeGameWeekState from '@/components/button-change-gameweek-state';
 import { GameWeekClientType } from '@/models/GameWeek';
+import { getSaturdayOfGameWeek } from '@/types/helpers';
 
 // import Card from '@/components/ui/card';
 
@@ -61,7 +62,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
 
     const title = gameWeek.name
     // put game week week number as desc
-    const description = `College Week ${gameWeek.week}`
+
 
     // i need a switch case statement to handle showing the picks leaderboard vs picks card, based on game.status
     let showLeaderboard = false;
@@ -105,10 +106,12 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                 <PageHeaderHeading >
                     {title}
                 </PageHeaderHeading>
-                <PageHeaderDescription>{description}</PageHeaderDescription>
+                <PageHeaderDescription>
+                    <span className='ml-2 text-sm text-muted-foreground'> Saturday, {getSaturdayOfGameWeek(gameWeek)?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                </PageHeaderDescription>
                 {gameWeek.num_selections > 0 &&
                     <p className="text-med font-light text-accent-foreground">
-                        {gameWeek.num_selections} Predictions
+                        Correctly Pick {gameWeek.num_selections} Spreads to Win the Pot!
                     </p>
                 }
                 <br />
@@ -123,7 +126,7 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                     <div className="flex flex-wrap items-center gap-2">
                         {isAdmin && <BtnChangeGameWeekState game={gameWeek as GameWeekClientType} />}
                         {isAdmin && showUpdateScoresBtn && <ButtonUpdateGameWeekLeaderboard gameWeekId={gameWeekId} />}
-                        {showMakePicksBtn && 
+                        {showMakePicksBtn &&
                             <LinkButton
                                 href={getLinks().getMakePicksUrl()}>
                                 Make Picks
