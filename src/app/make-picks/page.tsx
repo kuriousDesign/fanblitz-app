@@ -11,7 +11,7 @@ import { getCurrentPlayer } from "@/actions/getActions";
 import { GameWeekClientType } from "@/models/GameWeek";
 import ServerActionButton from "@/components/buttons/ServerActionButton";
 import { getIsAdmin } from "@/actions/userActions";
-import { updateSpreadDataNcaaFootballGameWeekMatchups } from "@/actions/getOddsApi";
+import { getCurrentWeekNcaaFootball, getCurrentWeekNcaaFootballSaturday, updateSpreadDataNcaaFootballGameWeekMatchups } from "@/actions/getOddsApi";
 import { TabCardSkeleton } from "@/components/cards/tab-card";
 import { PageActions, PageHeader, PageHeaderHeading, PageHeaderDescription } from "@/components/page-header";
 import { postSpreadPick } from "@/actions/postPick";
@@ -19,6 +19,8 @@ import { postSpreadPick } from "@/actions/postPick";
 import { Button } from "@/components/ui";
 import PicksIndicator from "./PicksIndicator";
 import { GameStates } from "@/types/enums";
+import { toast } from "sonner";
+import PickTable from "@/components/tables/pick-table";
 // import { updateOddsApiNcaaMatchupsScoresByGameWeek } from "@/actions/getOddsApi";
 
 
@@ -34,8 +36,11 @@ export default function MakePicksPage() {
   const [gameWeek, setGameWeek] = useState<GameWeekClientType | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [numGamesSelected, setNumGamesSelected] = useState<number>(0);
+  const [currentSaturday, setCurrentSaturday] = useState<Date>(new Date());
+  const [pickStatus, setPickStatus] = useState<'initialized' | 'picking' | 'picking_complete'>('initialized');
 
   const spreadPickRef = useRef<SpreadPickClientType | null>(null);
+  const showResetButton = false;
   // fetch matchups on load
   useEffect(() => {
     const fetchData = async () => {
@@ -47,8 +52,14 @@ export default function MakePicksPage() {
       }
 
       //const gameWeekData = await getActiveGameWeek();
-      const currentGameWeek = 6;
-      const gameWeekData = await getGameWeekByWeek(currentGameWeek);
+      const currentWeek = await getCurrentWeekNcaaFootball();
+      const currentSaturdayData = await getCurrentWeekNcaaFootballSaturday();
+      if (!currentWeek || !currentSaturdayData) {
+        console.error("No current game week found");
+        return;
+      }
+      setCurrentSaturday(currentSaturdayData);
+      const gameWeekData = await getGameWeekByWeek(currentWeek);
       if (!gameWeekData || !gameWeekData._id) {
         console.error("No active game week found");
         return;
@@ -89,6 +100,25 @@ export default function MakePicksPage() {
     fetchData();
   }, []);
 
+  // create an arrow functionthat updates matchups status
+  const updatePickingComplete = () => {
+    if (spreadPickRef.current) {
+      spreadPickRef.current.status = 'picking_complete';
+      setPickStatus('picking_complete');
+      console.log("Status changed to picking_complete");
+      // show toast message
+      toast.success('Picks locked in! You can still edit your picks until the game week starts.', { duration: 5000 });
+    }
+  };
+  // do thsame for picking active
+  const updatePickingActive = () => {
+    if (spreadPickRef.current) {
+      spreadPickRef.current.status = 'picking';
+      setPickStatus('picking');
+      console.log("Status changed to picking");
+    }
+  };
+
   // post picks when selections change
   useEffect(() => {
     const postData = async () => {
@@ -103,7 +133,7 @@ export default function MakePicksPage() {
       }
       // if you reached the number of selections, then change status to complete
       if (spreadPickRef.current.status === 'picking' && predictions.length >= (gameWeek?.num_selections || 0)) {
-        spreadPickRef.current.status = 'picking_complete';
+        //spreadPickRef.current.status = 'picking_complete';
         spreadPickRef.current.matchup_spread_predictions = predictions;
         console.log(`Number of games selected: ${predictions.length}`);
         await postSpreadPick(spreadPickRef.current);
@@ -126,7 +156,7 @@ export default function MakePicksPage() {
     setNumGamesSelected(predictions.length);
 
 
-  }, [predictions, gameWeek]);
+  }, [predictions, gameWeek, pickStatus]);
 
   if (isLoading) {
     return <div className="min-h-screen flex flex-col items-center justify-center bg-background w-screen gap-1">
@@ -189,6 +219,7 @@ export default function MakePicksPage() {
           Make College Week {gameWeek.week} Picks
         </PageHeaderHeading>
         <PageHeaderDescription>
+          Saturday, {currentSaturday.toLocaleDateString()}
           {(() => {
             switch (gameWeek.status) {
               case GameStates.FINISHED:
@@ -208,7 +239,7 @@ export default function MakePicksPage() {
               case GameStates.OPEN:
                 return (
                   <>
-                    {new Date(gameWeek.start_date).toLocaleDateString()} - {new Date(gameWeek.end_date).toLocaleDateString()}
+                    
                     <br />
                     You must pick a total of {gameWeek.num_selections} games to complete your picks.
                     <br />
@@ -218,26 +249,44 @@ export default function MakePicksPage() {
               case GameStates.UPCOMING:
                 return (
                   <>
-                    This game week is not yet open for picks. Check back on {new Date(gameWeek.start_date).toLocaleDateString()} to make your picks.
+                    This game week is not yet open for picks. Check back later to make your picks.
                   </>
                 );
             }
           })()}
         </PageHeaderDescription>
         <PageActions>
-          <Button
+          {showResetButton && <Button
             variant="outline"
             onClick={resetPredictions}
 
             hidden={predictions.length === 0}
           >
             Reset Picks
-          </Button>
+          </Button>}
+          {predictions.length >= gameWeek.num_selections && spreadPickRef?.current?.status === 'picking' && 
+            <Button
+              onClick={updatePickingComplete}
+              hidden={predictions.length === 0}
+              className="animate-pulse-subtle"
+            >
+              Lock Picks
+            </Button>
+          }
+            {predictions.length >= gameWeek.num_selections && spreadPickRef?.current?.status === 'picking_complete' && 
+            <Button
+              variant="outline"
+              onClick={updatePickingActive}
+              hidden={predictions.length === 0}
+            >
+              Edit Picks
+            </Button>
+          }
           {/* {isAdmin && <ServerActionButton label="Update Available Matchups" serverAction={updateMatchups} />} */}
           {/* {isAdmin && <ServerActionButton label="Update Scores" serverAction={updateScores} />} */}
         </PageActions>
         <div className={`mt-2 text-sm ${numGamesSelected >= gameWeek.num_selections ? 'text-green-600' : 'text-muted-foreground'}`}>
-          {numGamesSelected} of {gameWeek.num_selections} games selected
+          {spreadPickRef?.current?.status === 'picking_complete' ? "Picks Submitted!" : `${numGamesSelected} of ${gameWeek.num_selections} games selected`}
           {numGamesSelected < gameWeek.num_selections && (
             <span className="block text-accent-foreground animate-pulse">Pick more games</span>
           )}
@@ -246,20 +295,16 @@ export default function MakePicksPage() {
       {gameWeek.status === GameStates.OPEN &&
         <div className="flex flex-1 flex-col pb-6">
           <div className="theme-container container flex flex-1 flex-col gap-4 items-center">
-
             <Suspense fallback={<TabCardSkeleton />}>
-              {matchups && matchups.length > 0 && matchups.map((matchup, index) => (
-
+              {matchups && matchups.length > 0 && spreadPickRef?.current?.status !== 'picking_complete' && matchups.map((matchup, index) => (
                 <FootballSpreadPickerComponent key={index} matchup={matchup} predictions={predictions} setPredictions={setPredictions} disableSelect={numGamesSelected >= gameWeek.num_selections} />
-
               ))}
-
-              <PicksIndicator numPicks={numGamesSelected} numSelections={gameWeek.num_selections} />
-
+              {spreadPickRef?.current?.status !== 'picking_complete' && <PicksIndicator numPicks={numGamesSelected} numSelections={gameWeek.num_selections} />}
             </Suspense>
           </div>
         </div>
       }
+       {spreadPickRef?.current?.status === 'picking_complete' && spreadPickRef.current && <PickTable spreadPick={spreadPickRef.current} matchups={matchups} />}
     </div>
   );
 }

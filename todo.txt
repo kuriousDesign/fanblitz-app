@@ -1,4 +1,25 @@
 TODO:
+
+[ ] conference and team preference
+[ ] college football just saturday
+[ ] t&c's: don't need to validate that they read it, just have to give them the ability to read through it
+[ ] automate sending pdf of picks when we close the game (i need the email, what pieces of information do they need)
+[ ] pop explaining what a spread is
+[ ] email integration of free picks (choose up to three), 
+[ ] invite friends page, copy link invitation link
+[ ] facebook login
+[ ] wording to improve on sign-up which explains
+[ ] overview of how the game works
+[ ] submit button after the picks are made. 
+[ ] just name of school, and not mascot name
+[ ] just the last initial of the player
+[ ] add section that shows your pick above leaderboard
+[ ] more verbose language
+[ ] adding ranking and current wins/losses (future ask)
+
+
+
+
 [ ] fix ... action buttons on GameDiv and others
 [ ] hide create event and create games from non-admins
 [ ] add option to cancel creating pick while starting

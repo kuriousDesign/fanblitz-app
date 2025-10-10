@@ -26,6 +26,8 @@ export default function FootballSpreadPickerComponent({
   const [selected, setSelected] = useState<"home" | "away" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const isDisabled = disableSelect && !selected;
+  const startTime = new Date(matchup.game_date).toLocaleString();
+  console.log('Matchup start time:', startTime);
 
   // 🔑 Sync local state with predictions from parent
   useEffect(() => {
@@ -116,7 +118,7 @@ export default function FootballSpreadPickerComponent({
   );
 
   return (
-    <div className="w-full max-w-md p-4 bg-secondary rounded-lg shadow-md">
+    <div className="w-full max-w-md p-4 bg-secondary rounded-lg shadow-md relative">
       <div className="flex flex-col items-center w-full">
         <div className="flex w-full justify-center gap-8 items-center relative">
           <TeamDiv team="away" isSelected={selected === "away"} />
@@ -154,6 +156,9 @@ export default function FootballSpreadPickerComponent({
           {/* Home Team */}
           <TeamDiv team="home" isSelected={selected === "home"} />
         </div>
+      </div>
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center text-sm text-muted-foreground">
+        {new Date(matchup.game_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </div>
     </div>
   );

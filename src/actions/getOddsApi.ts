@@ -10,36 +10,101 @@ const API_KEY = process.env.ODDS_API_KEY; // Store your API key in .env.local
 
 //const KURIOUS_API_KEY_FOR_ODDS = "55502306146b29bfa749daae8bb44e66";
 
+//week 1 start was august 23 at 1200 am
+const season = 2025; // Use current season
+const week1StartDay = 26; // Aug 24 is first game saturday
+const week1StartMonth = 8; // August (use 08 to ensure proper formatting)
+const week1EndDay = 2; // Sep 2 is monday after week 1
+const week1EndMonth = 9; // September (use 09 to ensure proper formatting)
+const week1SaturdayDay = 30; // Aug 31 is saturday of week 1
+const week1SaturdayMonth = 8; // August (use 08 to ensure proper formatting)
+
+export async function getCurrentWeekNcaaFootball(): Promise<number | null> {
+  // based on todays date, use the values from week 1 start to determine current week
+  const today = new Date();
+
+  const week1StartFormatted = `${season}-${week1StartMonth.toString().padStart(2, '0')}-${week1StartDay.toString().padStart(2, '0')}`;
+  const week1StartDate = new Date(week1StartFormatted);
+
+  if (today < week1StartDate) {
+    return 0; // before season start
+  }
+
+  // Calculate weeks since season start
+  const weekDuration = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
+  const timeSinceStart = today.getTime() - week1StartDate.getTime();
+  const weeksSinceStart = Math.floor(timeSinceStart / weekDuration);
+
+  // NCAA regular season typically runs 13-15 weeks
+  const currentWeek = weeksSinceStart + 1;
+
+  // Cap at reasonable maximum (adjust based on your needs)
+  if (currentWeek > 15) {
+    return null; // post-season or off-season
+  }
+
+  return currentWeek;
+}
+
+// get saturday date
+export async function getCurrentWeekNcaaFootballSaturday(): Promise<Date | null> {
+  const currentWeek = await getCurrentWeekNcaaFootball();
+  if (!currentWeek) {
+    return null;
+  }
+
+  // Calculate the Saturday date for the current week based on week1 Saturday
+  const week1SaturdayFormatted = `${season}-${week1SaturdayMonth.toString().padStart(2, '0')}-${week1SaturdayDay.toString().padStart(2, '0')}`;
+  const week1SaturdayDate = new Date(week1SaturdayFormatted + 'T00:00:00');
+
+  // Add the number of weeks elapsed since week 1
+  const diffWeeks = currentWeek - 1;
+  const saturday = new Date(week1SaturdayDate.getTime() + diffWeeks * 7 * 24 * 60 * 60 * 1000);
+  saturday.setHours(0, 0, 0, 0);
+  return saturday;
+}
 
 // 🔥 New function: NCAA odds prioritized for FanDuel
 export async function getOddsApiNcaaMatchupsWithSpreadByWeek(week: number): Promise<GameWithBookmakerSpread[]> {
 
   //const nflUrl = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=YOUR_API_KEY&regions=us&markets=spreads&oddsFormat=american";
   const sport = Sports.NCAA_FOOTBALL;
-  //const nflSport = "americanfootball_nfl"; // NFL sport key
-
-  //commenceTimeFrom   Optional - filter the response to show games that commence on and after this parameter. Values are in ISO 8601 format, for example 2023-09-09T00:00:00Z. This parameter has no effect if the sport is set to 'upcoming'.
-  //week 1 start was august 23 at 1200 am
-  const season = 2025; // Use current season
-  const week1StartDay = 26; // Aug 24 is first game saturday
-  const week1StartMonth = 8; // August (use 08 to ensure proper formatting)
-  const week1EndDay = 2; // Sep 2 is monday after week 1
-  const week1EndMonth = 9; // September (use 09 to ensure proper formatting)
 
   // Format dates to match API expected format: 2023-09-10T23:59:59Z
   const week1StartFormatted = `${season}-${week1StartMonth.toString().padStart(2, '0')}-${week1StartDay.toString().padStart(2, '0')}`;
   const week1EndFormatted = `${season}-${week1EndMonth.toString().padStart(2, '0')}-${week1EndDay.toString().padStart(2, '0')}`;
 
+
   const week1CommenceStart = `${week1StartFormatted}T00:00:00Z`;
+  // i want to get the saturday that's between the start and end
+
   const week1CommenceEnd = `${week1EndFormatted}T23:59:59Z`;
   //results: 2024-09-07T00:00:00.000Z
 
   const diffWeeks = week - 1;
+
+  const JUST_USE_SATURDAYS_INSTEAD = true;
+
+  // if just using saturdays, then set commence time from to saturday 12:00 am and commence time to to saturday 11:59 pm easter time US
+  const week1SaturdayCommenceStart = `${season}-${week1SaturdayMonth.toString().padStart(2, '0')}-${week1SaturdayDay.toString().padStart(2, '0')}T00:00:00-04:00`;
+  const week1SaturdayCommenceEnd = `${season}-${week1SaturdayMonth.toString().padStart(2, '0')}-${week1SaturdayDay.toString().padStart(2, '0')}T23:59:59-04:00`;
+  let saturdayCommenceTimeFrom = new Date(new Date(week1SaturdayCommenceStart).getTime() + diffWeeks * 7 * 24 * 60 * 60 * 1000).toISOString();
+  saturdayCommenceTimeFrom = saturdayCommenceTimeFrom.replace(/.000Z$/, 'Z');
+  let saturdayCommenceTimeTo = new Date(new Date(week1SaturdayCommenceEnd).getTime() + diffWeeks * 7 * 24 * 60 * 60 * 1000).toISOString();
+  saturdayCommenceTimeTo = saturdayCommenceTimeTo.replace(/.000Z$/, 'Z');
+
+  // set commenceTimeFrom and commenceTimeTo to saturday values
+
   let commenceTimeFrom = new Date(new Date(week1CommenceStart).getTime() + diffWeeks * 7 * 24 * 60 * 60 * 1000).toISOString();
-  // replace 0Z with Z at the end
   commenceTimeFrom = commenceTimeFrom.replace(/.000Z$/, 'Z');
   let commenceTimeTo = new Date(new Date(week1CommenceEnd).getTime() + diffWeeks * 7 * 24 * 60 * 60 * 1000).toISOString();
   commenceTimeTo = commenceTimeTo.replace(/.000Z$/, 'Z');
+
+  if (JUST_USE_SATURDAYS_INSTEAD) {
+    commenceTimeFrom = saturdayCommenceTimeFrom;
+    commenceTimeTo = saturdayCommenceTimeTo;
+    console.log(`Using Saturday only for week ${week} from ${saturdayCommenceTimeFrom} to ${saturdayCommenceTimeTo}`);
+  }
 
   const queriedBookmakers = [
     "fanduel",
@@ -181,7 +246,7 @@ export async function updateOddsApiNcaaMatchupsScoresByGameWeek(gameWeekId: stri
       // find corresponding matchup with same id
       const correspondingMatchup = matchups.find(m => m.api_game_id === matchupScore.id);
       // create list of promises
-      
+
       if (correspondingMatchup) {
         // update scores in the corresponding matchup
         // extract home score from matchupScore

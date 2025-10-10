@@ -20,6 +20,7 @@ import { postNewPlayerWithUser } from "@/actions/postActions";
 import { DefaultUser } from "@auth/core/types";
 import { getGameWeekByWeek } from "@/actions/getMatchups";
 import { GameStates } from "@/types/enums";
+import { getCurrentWeekNcaaFootball } from "@/actions/getOddsApi";
 
 
 const title = "Dashboard";
@@ -38,6 +39,8 @@ export default async function DashboardPage() {
     }
     let player = await getCurrentPlayer();
 
+
+
     if (!player || !player._id) {
         console.log('No player found, creating a new player for user', user);
         //create a new player using user
@@ -45,7 +48,10 @@ export default async function DashboardPage() {
         player = await getCurrentPlayer();
     }
     //const isAdmin = await getIsAdmin();
-    const currentWeek = 6;
+    const currentWeek = await getCurrentWeekNcaaFootball();
+    if (!currentWeek) {
+        return <div>No current week found</div>;
+    }
 
     const currentGameWeek = await getGameWeekByWeek(currentWeek);
     if (!currentGameWeek || !currentGameWeek._id) {
