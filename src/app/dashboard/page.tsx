@@ -64,7 +64,62 @@ export default async function DashboardPage() {
                 <PageHeaderHeading>
                     {title}
                 </PageHeaderHeading>
-                <PageHeaderDescription>{description}</PageHeaderDescription>
+                <PageHeaderDescription>
+                    {description}
+                </PageHeaderDescription>
+                <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg">
+                    <h3 className="text-lg font-bold text-blue-800 mb-2">
+                        🏆 WIN $100,000 with the FanBlitz Football Challenge!
+                    </h3>
+                    <p className="text-sm text-gray-700 mb-3">
+                        Free to play. Make your game picks each week for a chance at $100k. 
+                        Pick every game correct for the week and win big!
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div className="bg-white p-3 rounded border">
+                            {player.free_picks_earned && player.free_picks_earned && (player.free_picks_used ?? 0) < player.free_picks_earned ? (
+                            <>
+                                <h4 className="font-semibold text-green-700">Your Free Picks this Week:</h4>
+                                <p className="text-2xl font-bold text-green-600">{player.free_picks_earned - (player.free_picks_used ?? 0)}</p>
+                            </>
+                            ) : (
+                            <p className="text-sm text-gray-600">No free picks available this week.</p>
+                            )}
+                            <LinkButton 
+                                size="sm" 
+                                variant="outline" 
+                                href="/earn-picks"
+                                className="mt-2"
+                            >
+                                Unlock More Picks
+                            </LinkButton>
+                        </div>
+                        
+                        <div className="bg-white p-3 rounded border">
+                            <h4 className="font-semibold text-orange-700">Week {currentGameWeek.week} Picks</h4>
+                            <p className="text-xs text-gray-600">
+                                Lock in by {new Date('2024-01-06T16:59:00Z').toLocaleString(undefined, {
+                                    weekday: 'long',
+                                    hour: 'numeric',
+                                    minute: '2-digit',
+                                    timeZoneName: 'short'
+                                })}
+                            </p>
+                            <LinkButton 
+                                size="sm" 
+                                href={getLinks().getMakePicksUrl()}
+                                className="mt-2"
+                            >
+                                Learn How to Pick
+                            </LinkButton>
+                        </div>
+                    </div>
+                    
+                    <p className="text-xs text-gray-500 mt-3">
+                        See official rules for details.
+                    </p>
+                </div>
                 <PageActions>
                     <LinkButton
                         href={getLinks().getGameWeekUrl(currentGameWeek._id)}>

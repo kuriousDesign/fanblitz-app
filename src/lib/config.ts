@@ -16,6 +16,14 @@ export const siteConfig = {
       href: getLinks().getMakePicksUrl(),
       label: "Make Picks",
     },
+    {
+      href: getLinks().getEarnPicksUrl(),
+      label: "Earn Picks",
+    },
+        {
+      href: getLinks().getTermsUrl(),
+      label: "Terms & Conditions",
+    },
     // {
     //   href: "https://kurious-design.com",
     //   label: "Kurious",

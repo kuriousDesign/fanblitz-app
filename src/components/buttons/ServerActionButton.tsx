@@ -18,10 +18,10 @@ export default function ServerActionButton({ label, serverAction }: ServerAction
             try {
                 // upon completion of server action execution,show toast
                 await serverAction();
-                toast.success('Available Matchupts updated successfully!');
+                toast.success(`${label} completed successfully!`);
             } catch (error) {
-                console.error('Error updating matchups:', error);
-                toast.error('Failed to update matchups.');
+                console.error('Error executing server action:', error);
+                toast.error('Failed to complete action. Please try again.');
             }
         });
     };

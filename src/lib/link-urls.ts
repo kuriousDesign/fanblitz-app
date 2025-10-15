@@ -30,6 +30,14 @@ export function getLinks() {
         return '/seasons';
     }
 
+    const getEarnPicksUrl = () => {
+        return '/earn-picks';
+    }
+
+    const getTermsUrl = () => {
+        return '/terms';
+    }
+
     const getGameWeekUrl = (gameWeekId?: string) => {
         return `${getGameWeeksUrl()}/${gameWeekId || '_'}`;
     }
@@ -139,6 +147,8 @@ export function getLinks() {
 
     return {
         getPlayersUrl,
+        getTermsUrl,
+        getEarnPicksUrl,
         getSeasonsUrl,
         getMakePicksUrl,
         getGameWeekUrl,

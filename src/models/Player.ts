@@ -10,7 +10,8 @@ const schema = new mongoose.Schema(
     email: { type: String, required: true }, // player email
     role: { type: String, required: true }, // e.g., Roles enum
     private_games: { type: [mongoose.Schema.Types.ObjectId], required: true }, // array of private game ids the user can access
-
+    free_picks_earned: { type: Number, required: false, default: 0 }, // number of free picks earned
+    free_picks_used: { type: Number, required: false, default: 0 }, // number of free picks used
   },
   { collection: 'players',
     versionKey: false, // 👈 disables __v

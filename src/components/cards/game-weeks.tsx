@@ -28,11 +28,12 @@ export default async function CardGameWeeks() {
     gameWeeks.sort((a, b) => (a.week || 0) - (b.week || 0));
     console.log("GameWeeks: ", gameWeeks.length);
 
-            const create2025GameWeeks = async () => {
-                "use server";
-                console.log('Creating 2025 game weeks...');
-                await createAndPostGameWeeksForSeason(2025);
-            };
+    const create2025GameWeeks = async () => {
+        "use server";
+        console.log('Creating 2025 game weeks...');
+        await createAndPostGameWeeksForSeason(2025);
+    };
+    
     return (
         <Card>
             <CardHeader>
