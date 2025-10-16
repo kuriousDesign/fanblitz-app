@@ -1,22 +1,23 @@
-import { sendEmailInvite } from '@/actions/emailActions';
+// import { sendEmailInvite } from '@/actions/emailActions';
 import { getConnectToDb, getCurrentPlayer } from '@/actions/getActions';
-import ServerActionButton from '@/components/buttons/ServerActionButton';
+import CopyInviteLinkButton from '@/components/buttons/CopyInviteLinkButton';
+// import ServerActionButton from '@/components/buttons/ServerActionButton';
 export default async function EarnPicksPage() {
     await getConnectToDb();
     const player = await getCurrentPlayer();
 
     //const friendEmail = 'gardner.761@gmail.com';
 
-    const sendEmailAction = async () => {
-        "use server";
-        if (!player || !player._id) {
-            throw new Error('No player found');
-        }
-        // send to a test email for now
-        //const email = formData.get('email') as string;
+    // const sendEmailAction = async () => {
+    //     "use server";
+    //     if (!player || !player._id) {
+    //         throw new Error('No player found');
+    //     }
+    //     // send to a test email for now
+    //     //const email = formData.get('email') as string;
 
-        await sendEmailInvite('gardner.761@gmail.com');
-    };
+    //     await sendEmailInvite('gardner.761@gmail.com');
+    // };
 
     return (
         <div className="p-6 space-y-4 flex flex-col items-center justify-center">
@@ -30,8 +31,9 @@ export default async function EarnPicksPage() {
                     You can use up to three free picks per week.
                 </p>
             </div>
+             <CopyInviteLinkButton playerId={player?._id as string} />
 
-            <div className="flex flex-row justify-center items-center gap-2">
+            {/* <div className="flex flex-row justify-center items-center gap-2">
                 <form action={sendEmailAction} className="w-full max-w-md flex gap-2">
                     <div className="flex-1">
                         <input
@@ -45,7 +47,7 @@ export default async function EarnPicksPage() {
                     </div>
                     <ServerActionButton label="Send Invite" serverAction={sendEmailAction} />
                 </form>
-            </div>
+            </div> */}
         </div>
     );
 }

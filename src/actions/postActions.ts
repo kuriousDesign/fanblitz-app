@@ -25,6 +25,7 @@ import { checkIsAdminByEmail } from '@/lib/utils';
 import type { DefaultUser } from '@auth/core/types';
 import { revalidateTag } from 'next/cache';
 import { CacheTags } from '@/lib/cache-tags';
+import { getPlayer } from './getActions';
 
 
 
@@ -73,11 +74,11 @@ export const postPayment = async (payment: Partial<PaymentClientType> & { _id?: 
     const { PaymentModel } = await import('@/models/reference/Payment');
     if (payment._id) {
       // dynamic import to avoid circular dependency
-      
+
       // Update existing payment
       await PaymentModel.findByIdAndUpdate(payment._id, paymentData, { new: true });
       return { message: 'Payment updated successfully' };
-    } else {  
+    } else {
       const newPayment = new PaymentModel(paymentData);
       await newPayment.save();
       return { message: 'Payment created successfully' };
@@ -243,12 +244,12 @@ export const postRacer = async (racer: Partial<RacerDoc | RacerClientType> & { _
 
 export const postPlayer = async (player: Partial<PlayerDoc | PlayerClientType> & { _id?: string }) => {
   await connectToDb();
-        const thisCacheTag = 'players';
-        //if thisCacheTag exists in CacheTags enum, revalidate it
-        if (thisCacheTag in CacheTags) {
-          console.log(`Revalidating tag: ${thisCacheTag}`);
-          revalidateTag(thisCacheTag);
-        }
+  const thisCacheTag = 'players';
+  //if thisCacheTag exists in CacheTags enum, revalidate it
+  if (thisCacheTag in CacheTags) {
+    console.log(`Revalidating tag: ${thisCacheTag}`);
+    revalidateTag(thisCacheTag);
+  }
 
   const { _id, ...rest } = player;
   if (_id && _id !== '') {
@@ -263,10 +264,45 @@ export const postPlayer = async (player: Partial<PlayerDoc | PlayerClientType> &
   }
 }
 
-export const postNewPlayerWithUser = async (user:DefaultUser) => {
+// c   // free_picks_earned: { type: Number, required: false, default: 0 }, // number of free picks earned
+// free_picks_used: { type: Number, required: false, default: 0 }, // number of free picks used
+
+// create postFreePickToPlayer that increments free_picks_earned by 1 for the player with the given player_id
+export const postFreePickToPlayer = async (player_id: string) => {
+  await connectToDb();
+  try {
+    
+    const player = await getPlayer(player_id);
+    if (!player) {
+      throw new Error('Player not found');
+    }
+    // check if free_picks_earned is undefined, if so set it to 0
+    if (!player.free_picks_earned) {
+      player.free_picks_earned = 0;
+    }
+
+    // check if free_picks_used is undefined, if so set it to 0
+    if (!player.free_picks_used) {
+      player.free_picks_used = 0;
+    }
+
+    player.free_picks_earned += 1;
+    await PlayerModel.findByIdAndUpdate(player._id, {
+      free_picks_earned: player.free_picks_earned,
+      free_picks_used: player.free_picks_used
+    }, { new: true });
+    console.log(`Free pick added to player ${player.name}. Total free picks earned: ${player.free_picks_earned}`);
+    return { message: `Free pick added successfully to player ${player.name}` };
+  } catch (error) {
+    console.error('Error adding free pick:', error);
+    throw new Error('Failed to add free pick');
+  }
+};
+
+export const postNewPlayerWithUser = async (user: DefaultUser) => {
   await connectToDb();
   //const user = await getUser();
-  
+
   if (!user || !user.email || !user.id) {
     throw new Error('User not found or userId is invalid');
   }

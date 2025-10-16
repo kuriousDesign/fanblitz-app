@@ -16,8 +16,8 @@ import { TabCardSkeleton } from "@/components/cards/tab-card";
 
 //import TabCardGames from "@/components/tab-cards/games";
 import { Suspense } from "react";
-import { postNewPlayerWithUser } from "@/actions/postActions";
-import { DefaultUser } from "@auth/core/types";
+//import { postNewPlayerWithUser } from "@/actions/postActions";
+//import { DefaultUser } from "@auth/core/types";
 import { getGameWeekByWeek } from "@/actions/getMatchups";
 import { GameStates } from "@/types/enums";
 import { getCurrentWeekNcaaFootball } from "@/actions/getOddsApi";
@@ -37,15 +37,15 @@ export default async function DashboardPage() {
         console.log('No user found, redirecting to sign in', user);
         return null;
     }
-    let player = await getCurrentPlayer();
+    const player = await getCurrentPlayer();
 
 
 
     if (!player || !player._id) {
-        console.log('No player found, creating a new player for user', user);
+        console.error('No player found, creating a new player for user', user);
         //create a new player using user
-        await postNewPlayerWithUser(user as DefaultUser);
-        player = await getCurrentPlayer();
+        //await postNewPlayerWithUser(user as DefaultUser);
+        //player = await getCurrentPlayer();
     }
     //const isAdmin = await getIsAdmin();
     const currentWeek = await getCurrentWeekNcaaFootball();
