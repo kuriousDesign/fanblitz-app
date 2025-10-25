@@ -185,15 +185,6 @@ export default function MakePicksPage() {
     await updateSpreadDataNcaaFootballGameWeekMatchups(gameWeek._id as string);
   };
 
-  // const updateScores = async () => {
-
-  //   if (!gameWeek || !gameWeek._id) {
-  //     console.error("No active game week found");
-  //     return;
-  //   }
-  //   await updateOddsApiNcaaMatchupsScoresByGameWeek(gameWeek._id as string);
-  // };
-
   // create a function that will reset all prediction
   const resetPredictions = async () => {
     setPredictions([]);

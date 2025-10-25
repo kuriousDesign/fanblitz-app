@@ -20,6 +20,7 @@ import { auth } from '@/auth';
 import { HardChargerTableModel, HardChargerTableClientType } from '@/models/reference/HardChargerTable';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { CacheTags } from '@/lib/cache-tags';
+import { DefaultUser } from '@auth/core/types';
 
 export const getConnectToDb = async () => {await connectToDb();}
 
@@ -244,7 +245,7 @@ export const getRacersWithDriversForPickCreation = async (gameId: string) => {
 //   return player as PlayerClientType;
 // };
 
-export const getUser = async () => {
+export const getUser = async (): Promise<DefaultUser | null> =>  {
   const session = await auth();
   if (!session || !session.user) {
     console.log('No user found in auth session');
@@ -255,8 +256,10 @@ export const getUser = async () => {
   //return an object tha adds a field id to session.user object
   const userObject = {
     ...session.user,
-    id: session.user.email
+    id: session.user.email || undefined
   };
+
+
   return userObject; // Return the user object with the added id field
 };
 
@@ -279,6 +282,7 @@ export const getCurrentPlayer = async (): Promise<PlayerClientType> => {
     console.warn(`getCurrentPlayer() No player found with user_id: ${user.id}`);
     return {} as PlayerClientType; // Return an empty player object if no user ID is found}
   }
+
   return players[0] as PlayerClientType;
 };
 

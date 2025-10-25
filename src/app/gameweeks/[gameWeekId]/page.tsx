@@ -1,5 +1,4 @@
 export const experimental_ppr = true;
-
 import { Suspense } from 'react';
 
 //import { getCurrentPlayer } from '@/actions/getActions';
@@ -27,6 +26,8 @@ import TableSpreadPickLeaderboard, { PickLeaderboardSkeleton } from '@/component
 import BtnChangeGameWeekState from '@/components/button-change-gameweek-state';
 import { GameWeekClientType } from '@/models/GameWeek';
 import { getSaturdayOfGameWeek } from '@/types/helpers';
+import ServerActionButton from '@/components/buttons/ServerActionButton';
+import { sendGameWeekReport } from '@/actions/reportActions';
 
 // import Card from '@/components/ui/card';
 
@@ -51,6 +52,11 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
         matchupsPromise,
         picksPromise,
     ]);
+
+    const sendReport = async () => {
+        "use server";
+        sendGameWeekReport(gameWeekId);
+    };  
 
     const winningPicks: SpreadPickClientType[] = [];
 
@@ -132,6 +138,9 @@ export default async function GameWeekPage({ params }: { params: Promise<{ gameW
                                 Make Picks
                             </LinkButton>
                         }
+             
+                        {isAdmin && <ServerActionButton label="Send Report" serverAction={sendReport} />}
+                     
                     </div>
                 </PageActions>
             </PageHeader>

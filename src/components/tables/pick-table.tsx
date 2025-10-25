@@ -7,14 +7,12 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-import { MatchupSpreadPredictionClientType, SpreadPickClientType } from '@/models/SpreadPick';
+import { MatchupSpreadPredictionClientType } from '@/models/SpreadPick';
 
 import { MatchupClientType } from '@/models/Matchup';
 import React from 'react';
-export interface PickTableProps {
-    spreadPick: SpreadPickClientType;
-    matchups: MatchupClientType[];
-}
+import { PickTableProps } from "@/types/globals";
+
 
 export default function PickTable({ spreadPick, matchups }: PickTableProps) {
         // need to create table headers dependent on game type
@@ -29,7 +27,7 @@ export default function PickTable({ spreadPick, matchups }: PickTableProps) {
         const isCorrect: { [key: string]: boolean } = {};
         const isSpreadFavorite: { [key: string]: boolean } = {};
         const predictionMatchups: { [key: string]: MatchupClientType } = {};
-        spreadPick.matchup_spread_predictions.forEach((prediction, index) => {
+        spreadPick.matchup_spread_predictions.forEach((prediction: MatchupSpreadPredictionClientType, index: number) => {
             const matchup = matchups.find((m: MatchupClientType) => m._id === prediction.matchup_id);
             if (matchup) {
                 //console.log("matchup status", matchup.status);

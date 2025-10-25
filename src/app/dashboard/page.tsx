@@ -41,7 +41,7 @@ export default async function DashboardPage() {
 
 
     if (!player || !player._id) {
-        console.error('No player found, creating a new player for user', user);
+        console.log('No player found, creating a new player for user', user);
         //create a new player using user
         await postNewPlayerWithUser(user as DefaultUser);
         player = await getCurrentPlayer();

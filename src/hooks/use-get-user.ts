@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 interface User {
     // Define your user interface here
-    id: string | null | undefined;
+    id?: string | null | undefined;
     email?: string | null | undefined;
     name?: string | null | undefined;
     image?: string | null | undefined;

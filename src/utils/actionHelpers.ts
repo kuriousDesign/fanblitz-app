@@ -4,6 +4,9 @@ import { toClientObject } from '@/utils/mongooseHelpers';
 import { Roles } from '@/types/globals';
 import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 import { CacheTags } from '@/lib/cache-tags';
+import { MatchupClientType } from '@/models/Matchup';
+import { MatchupSpreadPredictionClientType } from '@/models/SpreadPick';
+import { PredictionRowData } from '@/types/globals';
 
 
 export const adminRoleProtectedOptions = {
@@ -173,3 +176,25 @@ export const createDeleteHandler = <T extends { _id?: string }>(
     return { message: 'Deleted successfully' };
   };
 };
+
+
+export function buildPlayerPickTableRowData(matchup: MatchupClientType, prediction: MatchupSpreadPredictionClientType, index: number): PredictionRowData {
+
+    const isCorrect = (prediction.selection + '_team') === matchup.winner;
+    const isSpreadFavorite = (matchup.spread_favorite_team === (prediction.selection + '_team')); // true if the predicted team was the favorite
+    const predictedTeam = prediction.selection === "home" ? matchup.home_team : matchup.away_team;
+    const opponentTeam = prediction.selection === "home" ? matchup.away_team : matchup.home_team;
+    const predictedTeamSpreadValue = isSpreadFavorite ? `-${prediction.spread_points}` : `+${prediction.spread_points}`;
+
+    return {
+        pickNumber: (index + 1).toString(),
+        predictedTeam: predictedTeam,
+        predictedTeamSpreadValue: predictedTeamSpreadValue,
+        opponentTeam: opponentTeam,
+        oddsMakerName: matchup.bookmaker,
+        oddsMadeOnDate: matchup.spread_date,
+        kickoffDate: matchup.game_date,
+        gameStatus: matchup.status,
+        isCorrect: isCorrect,
+    };
+}

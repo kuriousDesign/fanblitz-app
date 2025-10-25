@@ -16,20 +16,14 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronDownIcon } from 'lucide-react';
 import React from 'react';
-import PickTable, { PickTableProps } from "@/components/tables/pick-table";
+import PickTable from "@/components/tables/pick-table";
+import { PickTableProps } from "@/types/globals";
 
 
 export function PopoverSpreadPickDetails({
     spreadPick,
     matchups,
 }: PickTableProps) {
-
-
-
-    // sort the matchup predictions by matchup status: in_progress, finished, scheduled
-    
-    // matchup status: scheduled, in_progress, finished
-
     return (
         <Drawer>
             <DrawerTrigger asChild>
